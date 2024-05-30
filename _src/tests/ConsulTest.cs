@@ -1,8 +1,10 @@
-using utils.Consul;
+using NUnit.Framework;
+using Tests;
+using Utils.Consul;
 
-namespace tests;
+namespace ProjectCookie._src.tests;
 
-public class ConsulTest : BaseTest
+public class ConsulTest : BaseUnitTest
 {
     [Test]
     public async Task ConsulReadTest()

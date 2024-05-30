@@ -1,12 +1,12 @@
-﻿using DAL.Entities;
-using DAL.Entities.Devices;
+﻿using DAL.Entities.Devices;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
+using ProjectCookie._src.utils.Logging;
 using Services.Drivers.MQTT;
 using Utilities.Logging;
 
-namespace Services.Drivers
+namespace ProjectCookie._src.services.MQTT
 {
     public class MQTTDriver : Driver
     {
@@ -20,7 +20,7 @@ namespace Services.Drivers
         private MqttPublishSub _publishSub;
 
 
-        public MQTTDriver(IAquariumLogger logger, MQTTDevice src, List<MQTTDataPoint> datapoints)
+        public MQTTDriver(ICookieLogger logger, MQTTDevice src, List<MQTTDataPoint> datapoints)
             : base(logger, src.DeviceName)
         {
             MqttDevice = src;
@@ -73,10 +73,12 @@ namespace Services.Drivers
             log.Information($"MQTT client unsubscribed to topic: {topic}");
         }
 
-        public async Task Publish(string topic, NumericSample payload)
+        //TODO
+        /**public async Task Publish(string topic, NumericSample payload)
         {
             await _publishSub.PublishNumeric(topic, payload);
             log.Information($"MQTT client published payload: {payload} to topic: {topic}");
         }
+        **/
     }
 }

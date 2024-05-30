@@ -1,8 +1,8 @@
-using dal.MongoDB;
+using DAL.Entities;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using services.Response;
+using Services.Response.Basis;
 
-namespace services.interfaces;
+namespace ProjectCookie._src.services.interfaces;
 
 public interface IService<TEntity> where TEntity : Entity
 {

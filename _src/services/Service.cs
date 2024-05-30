@@ -1,58 +1,48 @@
-using dal;
-using dal.interfaces;
-using dal.MongoDB;
+using DAL.Entities;
+using DAL.UnitOfWork;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using services.interfaces;
-using services.ModelState;
-using services.ModelState.interfaces;
-using services.Response;
-using utils.interfaces;
+using ProjectCookie._src.dal;
+using ProjectCookie._src.dal.Repository.Interface;
+using ProjectCookie._src.services.interfaces;
+using ProjectCookie._src.utils.Logging;
+using Services.Response.Basis;
+using Services.Utils;
 
-namespace services;
-// hü
-// delete, get, getall, update implementieren
-// einzelnen services implementieren --> aquariumitem usw siehe moodle
-// login ist mit authentication handler geschrieben
-// getforuser --> aquarien pro benutzer zurückgeben
-// keine interfaces notwendig
-
-// login
-// login request als parameter
-// picture machen wir nächstes mal
+namespace ProjectCookie._src.services;
 
 // request ordner im service für login und picture request
 public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entity
 {
     protected IUnitOfWork UnitOfWork;
-    protected IMongoRepository<TEntity> Repo;
+    protected IPostgresRepository<TEntity> Repo;
     protected Serilog.ILogger Logger;
     
     // ModelStateWrapper prüft, ob Model valide ist
     protected IModelStateWrapper ValidationDictionary;
     protected ModelStateDictionary ModelStateDictionary;
-    protected IAquariumLogger AquariumLogger;
+    protected ICookieLogger CookieLogger;
     
     // einem REST Controller kann ein Claim mitgegeben werden
     protected User CurrentUser { get; private set; }
     
-    public Service(IUnitOfWork unitOfWork, IMongoRepository<TEntity> repo, IAquariumLogger logger)
+    public Service(IUnitOfWork unitOfWork, IPostgresRepository<TEntity> repo, ICookieLogger logger)
     {
         UnitOfWork = unitOfWork;
         Repo = repo;
-        Logger = logger.ContextLog<Service<TEntity>>();
-        AquariumLogger = logger;
+        //TODO Logger = logger.ContextLog<Service<TEntity>>();
+        CookieLogger = logger;
     }
 
     public abstract Task<bool> Validate(TEntity entity);
     
     public async Task<ItemResponseModel<TEntity>> Create(TEntity entry)
     {
-        bool validated = await Validate(entry);
+      /**  bool validated = await Validate(entry);
         ItemResponseModel<TEntity> response = new ItemResponseModel<TEntity>();
         
         if (validated)
         {
-            TEntity result = await Repo.InsertOneAsync(entry);
+            TEntity result = await Repo.InsertAsync(entry);
             response.Data = result;
             response.HasError = false;
         }
@@ -63,13 +53,13 @@ public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entit
             response.HasError = true;
             response.ErrorMessages = ValidationDictionary.Errors;
         }
-
-        return response;
+**/
+        return null;
     }
 
     public async Task<ItemResponseModel<TEntity>> Update(string id, TEntity entry)
     {
-        bool validated = await Validate(entry);
+       /** bool validated = await Validate(entry);
         ItemResponseModel<TEntity> response = new ItemResponseModel<TEntity>();
 
         if (validated)
@@ -83,14 +73,14 @@ public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entit
             response.Data = default(TEntity);
             response.HasError = true;
             response.ErrorMessages = ValidationDictionary.Errors;
-        }
+        }**/
         
-        return response;
+        return null;
     }
 
     public async Task<ActionResultResponseModel> Delete(string id)
     {
-        ActionResultResponseModel model = new ActionResultResponseModel();
+        /**ActionResultResponseModel model = new ActionResultResponseModel();
         model.Success = true;
 
         try
@@ -102,25 +92,26 @@ public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entit
             model.Success = false;
             Console.WriteLine(e);
         }
-        
-        return model;
+        **/
+        return null;
     }
 
     public async Task SetModelState(ModelStateDictionary validation)
     {
-        ValidationDictionary = new ModelStateWrapper(validation, AquariumLogger);
+        ValidationDictionary = new ModelStateWrapper(validation);
         ModelStateDictionary = validation;
     }
 
     // Fragt den aktuellen Nutzer ab
     public async Task Load(string email)
     {
-        CurrentUser = await UnitOfWork.User.FindOneAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+        // CurrentUser = await UnitOfWork.Users.FindOneAsync(x => x.Email.ToLower().Equals(email.ToLower()));
     }
 
     public async Task<TEntity> Get(string id)
     {
-        return await Repo.FindByIdAsync(id);
+        //return await Repo.FindByIdAsync(id);
+        return null;
     }
 
     public async Task<List<TEntity>> Get()

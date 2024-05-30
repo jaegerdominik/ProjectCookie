@@ -1,7 +1,8 @@
 ﻿using MQTTnet.Client;
 using MQTTnet.Extensions.ManagedClient;
+using Services.Drivers;
 
-namespace Services.Drivers.MQTT
+namespace ProjectCookie._src.services.MQTT
 {
     public class MqttConnectSub
     {

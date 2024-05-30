@@ -5,7 +5,7 @@ namespace DataCollector.ReturnModels
     public class ValueReturnNumericModel : ValueReturnModelSingle
     {
 
-        public NumericSample Sample { get; set; }
+        public float Sample { get; set; }
         public String Unit { get; set; }
 
     }

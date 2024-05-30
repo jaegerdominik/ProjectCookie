@@ -1,6 +1,8 @@
-namespace tests.ServiceTests;
+using Tests;
 
-public class BaseServiceTest : BaseTest
+namespace ProjectCookie._src.tests.ServiceTests;
+
+public class BaseServiceTest : BaseUnitTest
 {
     public BaseServiceTest() : base() {}
 }

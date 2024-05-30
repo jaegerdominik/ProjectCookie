@@ -1,11 +1,10 @@
-using Amazon.SecurityToken.SAML;
-using dal;
-using dal.Repositories;
-using dal.Repositories.interfaces;
+using NUnit.Framework;
+using ProjectCookie._src.dal;
+using Tests;
 
-namespace tests.Repository;
+namespace ProjectCookie._src.tests.Repository;
 
-public class TestUserRepository : BaseTest
+public class TestUserRepository : BaseUnitTest
 {
     /*
      * Specific Tests
@@ -20,8 +19,8 @@ public class TestUserRepository : BaseTest
         user.Lastname = "Last";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        var result = UnitOfWork.User.Login(user.Email, user.HashedPassword).Result;
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        var result = UnitOfWork.Users.Login(user.Email, user.Password).Result;
         
         Assert.That(result.ID, Is.Not.Null);
         Assert.That(result.Email, Is.EqualTo("login@repo.com"));
@@ -38,11 +37,11 @@ public class TestUserRepository : BaseTest
         user.Email = "FilterBy";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        UnitOfWork.User.InsertOneAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
         
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == user.Email).Count(), Is.EqualTo(3));
+        Assert.That(UnitOfWork.Users.FilterBy(doc => doc.Email == user.Email).Count(), Is.EqualTo(3));
         return Task.CompletedTask;
     }
 
@@ -53,8 +52,8 @@ public class TestUserRepository : BaseTest
         user.Email = "ConvertBy";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        var result = UnitOfWork.User.FilterBy(doc => doc.Email == "ConvertBy", doc => doc);
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        var result = UnitOfWork.Users.FilterBy(doc => doc.Email == "ConvertBy", doc => doc);
         
         Assert.That(result.Count(), Is.EqualTo(1));
         return Task.CompletedTask;
@@ -67,8 +66,8 @@ public class TestUserRepository : BaseTest
         user.Email = "FindOne";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        var result = UnitOfWork.User.FindOneAsync(doc => doc.Email == "FindOne").Result;
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        var result = UnitOfWork.Users.FindAsync(doc => doc.Email == "FindOne").Result;
         
         Assert.That(result.Email, Is.EqualTo(user.Email));
         return Task.CompletedTask;
@@ -81,10 +80,10 @@ public class TestUserRepository : BaseTest
         user.Email = "FindOneByID";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
 
-        var getItem = UnitOfWork.User.FindOneAsync(doc => doc.Email == "FindOneByID").Result;
-        var result = UnitOfWork.User.FindByIdAsync(getItem.ID).Result;
+        var getItem = UnitOfWork.Users.FindAsync(doc => doc.Email == "FindOneByID").Result;
+        var result = UnitOfWork.Users.FindByIdAsync(getItem.ID).Result;
         
         Assert.That(result.Email, Is.EqualTo(user.Email));
         return Task.CompletedTask;
@@ -97,8 +96,8 @@ public class TestUserRepository : BaseTest
         user.Email = "InsertOne";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        var result = UnitOfWork.User.FilterBy(doc => doc.Email == "InsertOne");
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        var result = UnitOfWork.Users.FilterBy(doc => doc.Email == "InsertOne");
         
         Assert.That(result.Count(), Is.EqualTo(1));
         return Task.CompletedTask;
@@ -111,37 +110,13 @@ public class TestUserRepository : BaseTest
         user.Email = "UpdateOne";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
 
         user.Active = false;
-        UnitOfWork.User.UpdateOneAsync(user);
-        var result = UnitOfWork.User.FindOneAsync(doc => doc.Email == "UpdateOne").Result;
+        UnitOfWork.Users.UpdateAsync(user);
+        var result = UnitOfWork.Users.FindAsync(doc => doc.Email == "UpdateOne").Result;
         
         Assert.That(result.Active, Is.EqualTo(false));
-        return Task.CompletedTask;
-    }
-    
-    // TODO:
-    [Test]
-    public Task TestInsertOrUpdateOneAsync()
-    {
-        User user = new User("Pa$$word");
-        user.Email = "Update";
-        user.Active = true;
-        
-        User user2 = new User("Pa$$word");
-        user2.Email = "Insert";
-        user2.Active = true;
-
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-
-        user.Email = "UpdateOrInsert";
-        UnitOfWork.User.InsertOrUpdateOneAsync(user).Wait();
-        UnitOfWork.User.InsertOrUpdateOneAsync(user2).Wait();
-        
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == "Update").Count(), Is.EqualTo(0));
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == "Insert").Count(), Is.EqualTo(1));
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == "UpdateOrInsert").Count(), Is.EqualTo(1));
         return Task.CompletedTask;
     }
     
@@ -152,9 +127,9 @@ public class TestUserRepository : BaseTest
         user.Email = "DeleteOne";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        UnitOfWork.User.DeleteOneAsync(doc => doc.Email == "DeleteOne");
-        var result = UnitOfWork.User.FilterBy(doc => doc.Email == user.Email);
+        UnitOfWork.Users.InsertAsync(user).Wait();
+        UnitOfWork.Users.DeleteAsync(doc => doc.Email == "DeleteOne");
+        var result = UnitOfWork.Users.FilterBy(doc => doc.Email == user.Email);
         
         Assert.That(result.Count(), Is.EqualTo(0));
         return Task.CompletedTask;
@@ -167,32 +142,12 @@ public class TestUserRepository : BaseTest
         user.Email = "DeleteOneByID";
         user.Active = true;
 
-        UnitOfWork.User.InsertOneAsync(user).Wait();
+        UnitOfWork.Users.InsertAsync(user).Wait();
 
-        var getItem = UnitOfWork.User.FindOneAsync(doc => doc.Email == "DeleteOneByID").Result;
-        var result = UnitOfWork.User.DeleteByIdAsync(getItem.ID);
+        var getItem = UnitOfWork.Users.FindAsync(doc => doc.Email == "DeleteOneByID").Result;
+        var result = UnitOfWork.Users.DeleteByIdAsync(getItem.ID);
         
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == user.Email).Count(), Is.EqualTo(0));
-        return Task.CompletedTask;
-    }
-    
-    [Test]
-    public Task TestDeleteManyAsync()
-    {
-        User user = new User("Pa$$word");
-        user.Email = "DeleteMany";
-        user.Active = true;
-
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        UnitOfWork.User.InsertOneAsync(user).Wait();
-        
-        Assert.That(UnitOfWork.User.FilterBy(doc => doc.Email == user.Email).Count(), Is.EqualTo(3));
-
-        UnitOfWork.User.DeleteManyAsync(doc => doc.Email == "DeleteMany");
-        var result = UnitOfWork.User.FilterBy(doc => doc.Email == user.Email);
-        
-        Assert.That(result.Count(), Is.EqualTo(0));
+        Assert.That(UnitOfWork.Users.FilterBy(doc => doc.Email == user.Email).Count(), Is.EqualTo(0));
         return Task.CompletedTask;
     }
 }

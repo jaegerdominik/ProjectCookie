@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
-using dal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using services.Authentication;
-using services.Response;
-using utils.interfaces;
+using ProjectCookie._src.dal;
+using ProjectCookie._src.services.interfaces;
+using ProjectCookie._src.utils.Logging;
+using Services;
+using Services.Response.Basis;
 
-
-namespace api.Controllers;
+namespace ProjectCookie.Controllers;
 
 
 public class UserController : BaseController<User>
@@ -15,22 +15,10 @@ public class UserController : BaseController<User>
 
     private IGlobalService service;
     
-    public UserController(IGlobalService service, IHttpContextAccessor accessor, IAquariumLogger logger) : base(service.UserService, accessor, logger)
+    public UserController(IGlobalService service, IHttpContextAccessor accessor, ICookieLogger logger) : base(service.UserService, accessor, logger)
     {
         this.service = service;
 
-    }
-    
-    
-    // Login
-    [HttpPost("UserLogin")]
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticationInformation))]
-    
-    public async Task<AuthenticationInformation> UserLogin([Required][FromBody]User user)
-    {
-        AuthenticationInformation response = await this.service.UserService.Login(user.Email, user.Password);
-        return response;
     }
     
     // Register

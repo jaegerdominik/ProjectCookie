@@ -2,9 +2,12 @@
 using DAL.Entities;
 using DAL.Entities.Devices;
 using DAL.UnitOfWork;
+using ProjectCookie._src.services.MQTT;
+using ProjectCookie._src.utils.Logging;
 using Serilog;
 using Services.Drivers;
 using Utilities.Logging;
+using ILogger = Serilog.ILogger;
 
 namespace Services
 {
@@ -14,12 +17,12 @@ namespace Services
         IUnitOfWork UnitOfWork = null;
         Dictionary<String, List<Driver>> Drivers = new Dictionary<String, List<Driver>>();
         System.Timers.Timer timer = null;
-        IAquariumLogger Logger;
-        public ServiceStart(IUnitOfWork unitOfWork, IAquariumLogger logger)
+        ICookieLogger Logger;
+        public ServiceStart(IUnitOfWork unitOfWork, ICookieLogger logger)
         {
             UnitOfWork = unitOfWork;
             this.Logger = logger;
-            log = logger.ContextLog<ServiceStart>();
+            //log = logger.ContextLog<ServiceStart>();
         }
 
         public async Task Start()
@@ -46,25 +49,6 @@ namespace Services
                 }
                 
             }
-            
-            
-            List<ModbusDevice> modbusdevice = await UnitOfWork.ModbusDevices.Get(x => x.Active);
-
-            foreach (ModbusDevice device in modbusdevice)
-            {
-                List<ModbusDataPoint> dataPoints = await UnitOfWork.ModbusDatapoint.GetForDevice(device.ID);
-
-                ModbusDriver modbus = new ModbusDriver(Logger, device, dataPoints);
-
-                if (!Drivers.ContainsKey(device.Aquarium))
-                {
-                    Drivers.Add(device.Aquarium, new List<Driver>());
-
-                    Drivers[device.Aquarium].Add(modbus);
-
-                    Task.Run(() => modbus.Connect());
-                }
-            }
         }
 
         private async void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -74,7 +58,7 @@ namespace Services
 
         public async Task Save()
         {
-
+            /**
             foreach (KeyValuePair<String, List<Driver>> aquarium in Drivers)
             {
                 ConcurrentBag<BinarySample> binarySamples = new ConcurrentBag<BinarySample>();
@@ -101,7 +85,7 @@ namespace Services
                         }
                     }
                 }
-                
+              
                 
                 foreach (Driver dr in aquarium.Value)
                 {
@@ -110,6 +94,7 @@ namespace Services
             }
             
             await UnitOfWork.SaveChangesAsync();
+                            **/  
         }
 
 

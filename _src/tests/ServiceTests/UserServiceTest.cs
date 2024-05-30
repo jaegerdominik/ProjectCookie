@@ -1,11 +1,11 @@
-using dal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
-using services.Authentication;
-using services.Response;
-using services.ServiceImpl;
+using NUnit.Framework;
+using ProjectCookie._src.dal;
+using ProjectCookie._src.services.ServiceImpl;
+using Services.Response.Basis;
 
-namespace tests.ServiceTests;
+namespace ProjectCookie._src.tests.ServiceTests;
 
 public class UserServiceTest : BaseServiceTest
 {
@@ -18,7 +18,7 @@ public class UserServiceTest : BaseServiceTest
         user.Lastname = "Last";
         user.Active = true;
         
-        UserService service = new UserService(UnitOfWork, UnitOfWork.User, AquariumLogger, new Authenticator(UnitOfWork));
+        UserService service = new UserService(CookieLogger, UnitOfWork, UnitOfWork.Users);
         var modelState = new Mock<ModelStateDictionary>();
         await service.SetModelState(modelState.Object);
         
@@ -27,11 +27,5 @@ public class UserServiceTest : BaseServiceTest
         Assert.That(model, Is.Not.Null);
         Assert.That(model.Data, Is.Not.Null);
         Assert.That(model.HasError, Is.False);
-
-        var result = service.Login(user.Email, user.HashedPassword).Result;
-        
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.Token, Is.Not.Null);
-        Assert.That(result.Token, Has.Length.GreaterThanOrEqualTo(244));
     }
 }

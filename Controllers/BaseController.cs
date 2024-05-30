@@ -1,11 +1,11 @@
 using System.Security.Claims;
-using dal.MongoDB;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using services;
-using utils.interfaces;
+using ProjectCookie._src.services;
+using ProjectCookie._src.utils.Logging;
 
-namespace api.Controllers;
+namespace ProjectCookie.Controllers;
 
 
     [ApiController]
@@ -19,7 +19,7 @@ namespace api.Controllers;
         protected Serilog.ILogger log = null;
         
 
-        public BaseController(Service<T> service, IHttpContextAccessor accessor, IAquariumLogger logger)
+        public BaseController(Service<T> service, IHttpContextAccessor accessor, ICookieLogger logger)
         {
             //log = logger.ContextLog<BaseController<T>>();
 

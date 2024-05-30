@@ -1,15 +1,13 @@
-using dal;
-using dal.interfaces;
-using dal.Repositories;
-using services.Authentication;
-using services.interfaces;
-using utils.interfaces;
+using DAL.UnitOfWork;
+using ProjectCookie._src.dal;
+using ProjectCookie._src.dal.Repository.Interface;
+using ProjectCookie._src.utils.Logging;
 
-namespace services.ServiceImpl;
+namespace ProjectCookie._src.services.ServiceImpl;
 
 public class UserService : Service<User>
 {
-    public UserService(IUnitOfWork unitOfWork, IMongoRepository<User> repo, IAquariumLogger logger, IAuthenticator auth) : base(unitOfWork, repo, logger)
+    public UserService(ICookieLogger logger, IUnitOfWork unitOfWork, IPostgresRepository<User> repo) : base(unitOfWork, repo, logger)
     {
     }
 
@@ -40,28 +38,5 @@ public class UserService : Service<User>
         }
 
         return ValidationDictionary.IsValid;
-    }
-
-    public async Task<AuthenticationInformation> Login(string username, string password)
-    {
-        // user suchen
-        User user = await UnitOfWork.User.Login(username, password);
-        
-        // user validieren
-        bool isValidUser = await Validate(user);
-        if (!isValidUser)
-        {
-            return null;
-        }
-            
-        // wenn er validiert, wird er authentifiziert
-        Authenticator authenticator = new(UnitOfWork);
-        AuthenticationInformation info = await authenticator.Authenticate(user);
-        if (info.Token == null)
-        {
-            return null;
-        }
-
-        return info;
     }
 }

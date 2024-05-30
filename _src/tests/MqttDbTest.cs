@@ -1,7 +1,9 @@
 ﻿using DAL.Entities;
 using DAL.Entities.Devices;
+using NUnit.Framework;
+using Tests;
 
-namespace Tests
+namespace ProjectCookie._src.tests
 {
     public class MqttDbTest : BaseUnitTest
     {
@@ -14,12 +16,9 @@ namespace Tests
 
             List<DataPoint> dataPoints = GetTestDataPoints(device);
             await CreateDataPoints(dataPoints);
-
-            NumericSample numericSample = GetNumericTestSample(dataPoints[0]);
-            await CreateNumericSampleEntry(numericSample);
-
-            List<BinarySample> binarySamples = GetBinarySamples(dataPoints[1]);
-            await CreateBinarySampleEntries(binarySamples);
+            
+            //NumericSample numericSample = GetNumericTestSample(dataPoints[0]);
+            //await CreateNumericSampleEntry(numericSample);
 
             await DeleteDevice(device);
         }
@@ -111,7 +110,7 @@ namespace Tests
 
         #endregion
 
-
+/**
         #region Numeric
 
         private static NumericSample GetNumericTestSample(DataPoint dataPoint)
@@ -164,5 +163,6 @@ namespace Tests
         }
 
         #endregion
+            **/
     }
 }

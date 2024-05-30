@@ -2,6 +2,7 @@
 using MQTTnet;
 using DAL.Entities;
 using System.Text.Json;
+using ProjectCookie._src.services.MQTT;
 
 namespace Services.Drivers.MQTT
 {
@@ -32,13 +33,15 @@ namespace Services.Drivers.MQTT
 
         private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
         {
-            string topic = eventArgs.ApplicationMessage.Topic;
+            //TODO
+           /** string topic = eventArgs.ApplicationMessage.Topic;
             DataPoint dataPoint = _driver.MqttDataPoints.First(dp => dp.TopicName == topic);
 
             ReadOnlySpan<byte> messageData = eventArgs.ApplicationMessage.PayloadSegment;
             NumericSample sample = JsonSerializer.Deserialize<NumericSample>(messageData);
 
             _driver.AddNumericMeasurement(dataPoint.Name, sample);
+            **/
 
             return Task.CompletedTask;
         }

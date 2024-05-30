@@ -1,6 +1,6 @@
-﻿using utils.interfaces;
+﻿using Utils;
 
-namespace tests;
+namespace ProjectCookie._src.tests;
 
 public class TestSettingsHandler : ISettingsHandler
 {

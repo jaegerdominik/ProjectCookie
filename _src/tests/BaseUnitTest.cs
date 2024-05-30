@@ -1,5 +1,9 @@
 ﻿using DAL.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
+using ProjectCookie._src.dal.UnitOfWork;
+using ProjectCookie._src.tests;
+using ProjectCookie._src.utils.Logging;
 using Utilities.Logging;
 using Utils;
 
@@ -11,7 +15,7 @@ namespace Tests
 
         protected ISettings Settings;
         protected ISettingsHandler SettingsHandler;
-        protected IAquariumLogger AquariumLogger;
+        protected ICookieLogger CookieLogger;
         protected IUnitOfWork UnitOfWork;
         // protected IAuthentication Authentication;
         //protected IPasswordHasher PasswordHasher;
@@ -26,9 +30,9 @@ namespace Tests
 
             serviceCollection.AddSingleton<ISettings, DataSettings>();
             serviceCollection.AddSingleton<ISettingsHandler, TestSettingsHandler>();
-            serviceCollection.AddSingleton<IAquariumLogger, AquariumLogger>();
+            serviceCollection.AddSingleton<ICookieLogger, CookieLogger>();
             serviceCollection.AddSingleton<IUnitOfWork, UnitOfWork>();
-            serviceCollection.AddSingleton<TimeScaleContext>();
+            serviceCollection.AddSingleton<PostgresDbContext>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -36,8 +40,8 @@ namespace Tests
             Settings = serviceProvider.GetRequiredService<ISettings>();
             SettingsHandler = serviceProvider.GetRequiredService<ISettingsHandler>();
             await SettingsHandler.Load();
-            AquariumLogger = serviceProvider.GetRequiredService<IAquariumLogger>();
-            await AquariumLogger.Init();
+            CookieLogger = serviceProvider.GetRequiredService<ICookieLogger>();
+            await CookieLogger.Init();
 
             UnitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
         }
