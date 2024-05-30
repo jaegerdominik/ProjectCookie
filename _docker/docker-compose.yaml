@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  cloudbeaver:
+    container_name: cookie-cloudbeaver
+    image: dbeaver/cloudbeaver:latest
+    networks: 
+      - cookie-network
+    ports:
+      - "8978:8978" # Der Port, auf dem CloudBeaver verfügbar sein wird
+    volumes:
+      - ./cloudbeaver_workspace:/workspace # Persistieren des Arbeitsbereichs
+  seq:
+    container_name: cookie-seq
+    image: datalust/seq:latest
+    ports:
+      - 5341:80
+    volumes:
+      - ./Seq:/data
+    environment:
+      ACCEPT_EULA: Y
+    networks:
+      - cookie-network
+    restart: unless-stopped
+  cookie-consul: 
+    container_name: cookie-consul
+    image: hashicorp/consul:latest
+    ports:
+      - "8500:8500"
+    volumes:
+      - ./consul-data:/consul/data
+    command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0
+    networks:
+      - cookie-network
+    restart: unless-stopped
+  cookie-etcd:
+    image: bitnami/etcd:latest
+    container_name: cookie-etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15 # Die gewünschte TimescaleDB-Version auswählen (hier: PostgreSQL 12)
+    container_name: cookie-timescaledb
+    environment:
+      POSTGRES_USER: admin # Benutzername für die Datenbank
+      POSTGRES_PASSWORD: pass # Passwort für den Benutzer
+      POSTGRES_DB: johann # Datenbankname
+    ports:
+      - "5433:5432" # Portweiterleitung für die Datenbank (Host:Container)
+    volumes:
+      - ./Timescaledb_data:/var/lib/postgresql/data # Persistenz für die Datenbank
+    restart: unless-stopped
+networks:
+  cookie-network:
+    driver: bridge

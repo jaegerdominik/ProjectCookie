@@ -8,7 +8,26 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
+        <PackageReference Include="Serilog" Version="3.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="_src\api\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="_src\api\appsettings.json" />
+      <_ContentIncludedByDefault Remove="_src\api\bin\Debug\net8.0\api.deps.json" />
+      <_ContentIncludedByDefault Remove="_src\api\bin\Debug\net8.0\api.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="_src\api\bin\Debug\net8.0\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="_src\api\bin\Debug\net8.0\appsettings.json" />
+      <_ContentIncludedByDefault Remove="_src\api\obj\api.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="_src\api\obj\Debug\net8.0\staticwebassets.build.json" />
+      <_ContentIncludedByDefault Remove="_src\api\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="_src\api\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="_src\api\Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="_src\dal\bin\Debug\net8.0\dal.deps.json" />
+      <_ContentIncludedByDefault Remove="_src\dal\obj\dal.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="_src\dal\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="_src\dal\obj\project.packagespec.json" />
     </ItemGroup>
 
 </Project>
