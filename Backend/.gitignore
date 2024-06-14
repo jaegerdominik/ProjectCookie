@@ -11,6 +11,11 @@ x64/
 [Bb]in/
 [Oo]bj/
 
+# Docker
+consul-data
+Seq
+Timescaledb_data
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
