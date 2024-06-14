@@ -1,0 +1,23 @@
+﻿.healthbar-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.healthbar-life {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    background-color: #6aff00; /* Standardfarbe: Grün */
+    border-radius: 50%;
+}
+
+.healthbar-life.active {
+    background-color: #6aff00; /* Lebenspunkt: Grün */
+}
+
+.healthbar-life.lost {
+    background-color: red; /* Verlorener Lebenspunkt: Rot */
+}
