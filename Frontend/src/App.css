@@ -112,12 +112,13 @@
 }
 
 .game-over {
-  font-size: 3em;
+  font-size: 1.5em;
   color: red;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .restart-button {

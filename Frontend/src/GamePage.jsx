@@ -14,6 +14,7 @@ function GamePage() {
     const [score, setScore] = useState(0); // Score-Tracker
     const [time, setTime] = useState(0); // Zeit-Tracker in Millisekunden
     const [isGameOver, setIsGameOver] = useState(false);
+    const [isGameStarted, setIsGameStarted] = useState(false);
     const spawnInterval = useRef(2000); // Start-Intervall: 2000ms
     const intervalId = useRef(null);
     const timerId = useRef(null);
@@ -45,15 +46,15 @@ function GamePage() {
     };
 
     useEffect(() => {
-        if (isGameOver) return;
+        if (!isGameStarted || isGameOver) return;
 
         intervalId.current = setInterval(spawnFigure, spawnInterval.current);
 
         return () => clearInterval(intervalId.current);
-    }, [isGameOver]);
+    }, [isGameStarted, isGameOver]);
 
     useEffect(() => {
-        if (isGameOver) {
+        if (!isGameStarted || isGameOver) {
             cancelAnimationFrame(timerId.current);
             return;
         }
@@ -68,7 +69,7 @@ function GamePage() {
         timerId.current = requestAnimationFrame(updateTimer);
 
         return () => cancelAnimationFrame(timerId.current);
-    }, [isGameOver, time]);
+    }, [isGameStarted, isGameOver, time]);
 
     const handleFigureClick = (id) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
@@ -102,6 +103,7 @@ function GamePage() {
         setScore(0);
         setTime(0);
         setIsGameOver(false);
+        setIsGameStarted(true);
         spawnInterval.current = 2000;
 
         clearInterval(intervalId.current);
@@ -113,6 +115,11 @@ function GamePage() {
             timerId.current = requestAnimationFrame(updateTimer);
         };
         timerId.current = requestAnimationFrame(updateTimer);
+    };
+
+    const handleStart = () => {
+        setIsGameStarted(true);
+        handleRestart();
     };
 
     return (
@@ -144,10 +151,22 @@ function GamePage() {
                 );
             })}
             <HealthBar lives={lives} />
-            {isGameOver && (
+            {(!isGameStarted || isGameOver) && (
                 <div className="game-over-container">
-                    <div className="game-over">Game Over</div>
-                    <button className="restart-button" onClick={handleRestart}>Restart</button>
+                    {!isGameStarted ? (
+                        <>
+                            <div className="game-over">
+                                Klicke auf die Figuren, die deinen Cookie wegessen wollen.
+                                Wenn 10 Figuren den Cookie erreichen, ist das Spiel vorbei.
+                            </div>
+                            <button className="restart-button" onClick={handleStart}>Start</button>
+                        </>
+                    ) : (
+                        <>
+                            <div className="game-over">Game Over</div>
+                            <button className="restart-button" onClick={handleRestart}>Restart</button>
+                        </>
+                    )}
                 </div>
             )}
         </div>
