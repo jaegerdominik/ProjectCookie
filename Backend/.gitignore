@@ -12,9 +12,9 @@ x64/
 [Oo]bj/
 
 # Docker
-consul-data
-Seq
-Timescaledb_data
+*consul-data
+*Seq
+*Timescaledb_data
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
