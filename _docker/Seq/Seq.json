@@ -71,10 +71,6 @@
     }
   },
   "process": {},
-  "runtime": {
-    "expressionNestingLimit": null,
-    "nativeExpressionNestingLimit": null
-  },
   "secretKey": {
     "provider": null,
     "providerArgs": null
