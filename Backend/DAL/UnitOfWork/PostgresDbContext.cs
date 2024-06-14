@@ -20,11 +20,12 @@ public class PostgresDbContext : DbContext
     {
         _log = log;
         
+        //jdbc:postgresql://localhost:5433/johann?password=pass&user=admin
         _server = "127.0.0.1";
         _username = "admin";
         _password = "pass";
-        _port = "27017";
-        _database = "AquariumManagement";
+        _port = "5433";
+        _database = "johann";
     }
     
 
