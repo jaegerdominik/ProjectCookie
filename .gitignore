@@ -11,9 +11,18 @@ x64/
 [Oo]bj/
 
 # Docker
-*_docker/consul-data
-*_docker/Seq
-*_docker/Timescaledb_data
+[Bb]ackend/_docker/consul-data*
+[Bb]ackend/_docker/consul-data/*
+[Bb]ackend\_docker\consul-data*
+[Bb]ackend\_docker\consul-data\*
+[Bb]ackend/_docker/Seq*
+[Bb]ackend/_docker/Seq/*
+[Bb]ackend\_docker\Seq*
+[Bb]ackend\_docker\Seq\*
+[Bb]ackend/_docker/Timescaledb_data*
+[Bb]ackend/_docker/Timescaledb_data/*
+[Bb]ackend\_docker\Timescaledb_data*
+[Bb]ackend\_docker\Timescaledb_data\*
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
