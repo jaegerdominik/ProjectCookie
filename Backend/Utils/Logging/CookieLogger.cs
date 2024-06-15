@@ -51,10 +51,14 @@ public class CookieLogger : ICookieLogger
                 .AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_settings.LoggerSettings)))
                 .Build();
             
-            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .CreateLogger();
 
             _logger = Log.Logger;
             _logger.Information("Logger Initialized");
+            _logger.Information($"Could use config: {configuration}");
             _isInitialized = true;
         }
     }

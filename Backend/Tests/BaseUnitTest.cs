@@ -32,10 +32,11 @@ public class BaseUnitTest
         Settings = _serviceProvider.GetRequiredService<ISettings>();
         SettingsHandler = _serviceProvider.GetRequiredService<ISettingsHandler>();
         CookieLogger = _serviceProvider.GetRequiredService<ICookieLogger>();
-        UnitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
         
         await SettingsHandler.Load();
         await CookieLogger.Init();
+        
+        UnitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
     }
 
     [TearDown]
@@ -47,17 +48,15 @@ public class BaseUnitTest
 
     protected virtual void _CollectServices()
     {
+        _services.AddSingleton<ISettings, DataSettings>();
+        _services.AddSingleton<ISettingsHandler, ConsulSettingsHandler>();
+        _services.AddSingleton<ICookieLogger, CookieLogger>();
+        _services.AddSingleton<PostgresDbContext>();
+        
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         _services.AddDbContext<PostgresDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
-            
-        _services.AddSingleton<ISettings, DataSettings>();
-        _services.AddSingleton<ISettingsHandler, ConsulSettingsHandler>();
-        _services.AddSingleton<ICookieLogger, CookieLogger>();
-        _services.AddSingleton<IUnitOfWork, UnitOfWork>();
-        _services.AddSingleton<PostgresDbContext>();
-        
         _services.AddSingleton<IUnitOfWork, UnitOfWork>();
     }
 
