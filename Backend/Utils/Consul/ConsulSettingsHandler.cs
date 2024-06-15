@@ -21,12 +21,12 @@ public class ConsulSettingsHandler : ISettingsHandler
             {
                 try
                 {
-                    String logger = await cli.GetKey("AquariumData/Logger");
+                    string logger = await cli.GetKey("CookieData/Logger");
+                    string db = await cli.GetKey("CookieData/Database");
+                    TimeScaleDBSettings dbSettings = JsonConvert.DeserializeObject<TimeScaleDBSettings>(db);
+                    
                     Settings.LoggerSettings = logger;
-                    String mongodb = await cli.GetKey("AquariumData/Database");
-
-                    TimeScaleDBSettings mongoDBSettings = JsonConvert.DeserializeObject<TimeScaleDBSettings>(mongodb);
-                    Settings.TimeScaleDBSettings = mongoDBSettings;
+                    Settings.TimeScaleDBSettings = dbSettings;
                 }
                 catch (Exception ex)
                 {

@@ -16,8 +16,7 @@ public class ConsulTest : BaseUnitTest
     {
         using (ConsulClient cli = new ConsulClient())
         {
-            Boolean connected = await cli.Connect();
-
+            bool connected = await cli.Connect();
             Assert.That(connected, Is.True);
         }
     }
@@ -27,12 +26,11 @@ public class ConsulTest : BaseUnitTest
     {
         using (ConsulClient cli = new ConsulClient())
         {
-            Boolean connected = await cli.Connect();
+            bool connected = await cli.Connect();
             Assert.That(connected, Is.True);
-            String info = await cli.GetKey("AquariumManagement/Logger");
-
+            
+            string info = await cli.GetKey("CookieManagement/Logger");
             Assert.That(info, Is.Not.Null);
-
         }
     }
 
@@ -40,7 +38,6 @@ public class ConsulTest : BaseUnitTest
     public async Task ReadFromConsulWithHandler()
     {
         await SettingsHandler.Load();
-
         Assert.That(Settings.LoggerSettings, Is.Not.Null);
     }
 }

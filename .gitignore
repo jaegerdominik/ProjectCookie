@@ -13,16 +13,22 @@ x64/
 # Docker
 [Bb]ackend/_docker/consul-data*
 [Bb]ackend/_docker/consul-data/*
+[Bb]ackend/_docker/consul-data/
 [Bb]ackend\_docker\consul-data*
 [Bb]ackend\_docker\consul-data\*
+[Bb]ackend\_docker\consul-data\
 [Bb]ackend/_docker/Seq*
 [Bb]ackend/_docker/Seq/*
+[Bb]ackend/_docker/Seq/
 [Bb]ackend\_docker\Seq*
 [Bb]ackend\_docker\Seq\*
+[Bb]ackend\_docker\Seq\
 [Bb]ackend/_docker/Timescaledb_data*
 [Bb]ackend/_docker/Timescaledb_data/*
+[Bb]ackend/_docker/Timescaledb_data/
 [Bb]ackend\_docker\Timescaledb_data*
 [Bb]ackend\_docker\Timescaledb_data\*
+[Bb]ackend\_docker\Timescaledb_data\
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -50,7 +56,6 @@ x64/
 *.vssscc
 .builds
 *.pidb
-*.log
 *.svclog
 *.scc
 

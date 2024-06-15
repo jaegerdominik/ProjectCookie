@@ -6,35 +6,36 @@ namespace ProjectCookie.Utils.Logging;
 
 public class CookieLogger : ICookieLogger
 {
-    ISettings Settings = null;
-    Boolean IsInitialized = false;
+    private readonly ISettings _settings;
+    private ILogger _logger;
+    private bool _isInitialized;
+
     public CookieLogger(ISettings settings)
     {
-        Settings = settings;
+        _settings = settings;
     }
 
 
-    private ILogger _Logger = null;
-    public ILogger ContextLog<T>(String context) where T : class
+    public ILogger ContextLog<T>(string context) where T : class
     {
-        if (_Logger == null)
-        {
-            InitLogger();
-        }
+        if (_logger == null) InitLogger();
 
-        ILogger ctx = _Logger.ForContext("Host", Dns.GetHostName()).ForContext("Context", context, destructureObjects: true).ForContext<T>();
+        ILogger ctx = _logger
+            .ForContext("Host", Dns.GetHostName())
+            .ForContext("Context", context, destructureObjects: true)
+            .ForContext<T>();
+        
         return ctx;
     }
 
-
     public ILogger ContextLog<T>() where T : class
     {
-        if (_Logger == null)
-        {
-            InitLogger();
-        }
+        if (_logger == null) InitLogger();
 
-        ILogger ctx = _Logger.ForContext("Host", Dns.GetHostName()).ForContext("Context", "Empty", destructureObjects: true).ForContext<T>();
+        ILogger ctx = _logger
+            .ForContext("Host", Dns.GetHostName())
+            .ForContext("Context", "Empty", destructureObjects: true)
+            .ForContext<T>();
 
         return ctx;
     }
@@ -42,26 +43,25 @@ public class CookieLogger : ICookieLogger
 
     private async Task InitLogger()
     {
-
-        if (!IsInitialized && !String.IsNullOrEmpty(Settings.LoggerSettings))
+        if (!_isInitialized && !string.IsNullOrEmpty(_settings.LoggerSettings))
         {
-            Serilog.Debugging.SelfLog.Enable(message =>
-            {
-                Console.WriteLine(message);
-            });
+            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            var configuration = new ConfigurationBuilder().AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(Settings.LoggerSettings))).Build();
-            //TODO Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_settings.LoggerSettings)))
+                .Build();
+            
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 
-            _Logger = Log.Logger;
-            _Logger.Information("Logger Initialized");
-            IsInitialized = true;
+            _logger = Log.Logger;
+            _logger.Information("Logger Initialized");
+            _isInitialized = true;
         }
     }
 
     public async Task Init()
     {
-        IsInitialized = false;
+        _isInitialized = false;
         await InitLogger();
     }
 }

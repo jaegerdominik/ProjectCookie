@@ -1,11 +1,14 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.DAL.UnitOfWork;
 using ProjectCookie.Utils;
+using ProjectCookie.Utils.Consul;
 using ProjectCookie.Utils.Logging;
 
 namespace ProjectCookie.Tests;
 
+[TestFixture]
 public class BaseUnitTest
 {
     public BaseUnitTest() { }
@@ -15,28 +18,50 @@ public class BaseUnitTest
     protected ICookieLogger CookieLogger;
     protected IUnitOfWork UnitOfWork;
 
+    protected ServiceCollection _services;
+    protected ServiceProvider _serviceProvider;
 
+    
     [SetUp]
-    public async Task Setup()
+    public virtual async Task Setup()
     {
-        //  var collection = new Mock<IServiceProvider>();
+        _services = new ServiceCollection();
+        _CollectServices();
+        _serviceProvider = _services.BuildServiceProvider();
 
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddSingleton<ISettings, DataSettings>();
-        serviceCollection.AddSingleton<ICookieLogger, CookieLogger>();
-        serviceCollection.AddSingleton<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddSingleton<PostgresDbContext>();
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-
-        Settings = serviceProvider.GetRequiredService<ISettings>();
-        SettingsHandler = serviceProvider.GetRequiredService<ISettingsHandler>();
+        Settings = _serviceProvider.GetRequiredService<ISettings>();
+        SettingsHandler = _serviceProvider.GetRequiredService<ISettingsHandler>();
+        CookieLogger = _serviceProvider.GetRequiredService<ICookieLogger>();
+        UnitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
+        
         await SettingsHandler.Load();
-        CookieLogger = serviceProvider.GetRequiredService<ICookieLogger>();
         await CookieLogger.Init();
-
-        UnitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
     }
+
+    [TearDown]
+    public virtual async Task TearDown()
+    {
+        _serviceProvider.Dispose();
+    }
+
+
+    protected virtual void _CollectServices()
+    {
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        _services.AddDbContext<PostgresDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+            );
+            
+        _services.AddSingleton<ISettings, DataSettings>();
+        _services.AddSingleton<ISettingsHandler, ConsulSettingsHandler>();
+        _services.AddSingleton<ICookieLogger, CookieLogger>();
+        _services.AddSingleton<IUnitOfWork, UnitOfWork>();
+        _services.AddSingleton<PostgresDbContext>();
+        
+        _services.AddSingleton<IUnitOfWork, UnitOfWork>();
+    }
+
+        
+    [Test (ExpectedResult = true)]
+    public async Task<bool> TestSetup() => await Task.FromResult(_services.Count != 0);
 }
