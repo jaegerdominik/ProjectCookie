@@ -1,7 +1,4 @@
-﻿using ProjectCookie.Utils.Logging;
-using ILogger = Serilog.ILogger;
-
-namespace ProjectCookie.Services.MQTT;
+﻿namespace ProjectCookie.Services.MQTT;
 
 public abstract class Driver
 {
@@ -9,11 +6,8 @@ public abstract class Driver
     public bool IsConnected { get; protected set; }
     public bool IsSubscribed { get; protected set; }
 
-    public ILogger log { get; set; }
-
-    public Driver(ICookieLogger logger, string name)
+    public Driver(string name)
     {
         Name = name;
-        log = logger.ContextLog<Driver>(name);
     }
 }

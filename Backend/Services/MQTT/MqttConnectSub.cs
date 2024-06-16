@@ -12,12 +12,11 @@ public class MqttConnectSub
     {
         try
         {
-            _driver.log.Information($"Connecting...");
             await _driver.MqttClient.ConnectAsync(_driver.MqttClientOptions, token);
         }
         catch (Exception ex)
         {
-            _driver.log.Error($"Failed to start MQTT client: {ex.Message}");
+            Console.WriteLine(ex);
         }
     }
     
@@ -34,7 +33,7 @@ public class MqttConnectSub
         }
         catch (Exception ex)
         {
-            _driver.log.Error($"Failed to stop MQTT client: {ex.Message}");
+            Console.WriteLine(ex);
         }
     }
 }

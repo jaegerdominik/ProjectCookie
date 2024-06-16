@@ -1,12 +1,13 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
 using ProjectCookie.Utils.Logging;
+using Serilog;
 
 namespace ProjectCookie.Services.MQTT;
 
 public class MqttDriver : Driver, IHostedService
 {
+    private IServiceScopeFactory _scopeFactory;
     public IMqttClient MqttClient { get; private set; }
     public MqttClientOptions MqttClientOptions { get; private set; }
     public List<string> Messages { get; private set; }
@@ -19,8 +20,10 @@ public class MqttDriver : Driver, IHostedService
     private MqttPublishSub _publishSub;
 
 
-    public MqttDriver(ICookieLogger logger, string driverName = "MQTT") : base(logger, driverName)
+    public MqttDriver(IServiceScopeFactory scopeFactory, string driverName = "MQTT") : base(driverName)
     {
+        _scopeFactory = scopeFactory;
+        
         _connectSub = new MqttConnectSub(this);
         _subscribeSub = new MqttSubscribeSub(this);
         _publishSub = new MqttPublishSub(this);
@@ -40,13 +43,11 @@ public class MqttDriver : Driver, IHostedService
 
         MqttClient.ConnectedAsync += async e =>
         {
-            log.Information("Connected to MQTT server. Subscribing...");
             await InitialSubscribe();
         };
 
         MqttClient.DisconnectedAsync += e =>
         {
-            log.Warning("Disconnected from MQTT server.");
             return Task.CompletedTask;
         };
 
@@ -62,21 +63,35 @@ public class MqttDriver : Driver, IHostedService
 
     public async Task StartAsync(CancellationToken token)
     {
-        if (IsConnected) return;
-        
-        await _connectSub.StartAsync(token);
-        IsConnected = MqttClient.IsConnected;
-        log.Information($"The MQTT client is connected: {IsConnected}");
+        using (IServiceScope scope = _scopeFactory.CreateScope())
+        {
+            ICookieLogger logger = scope.ServiceProvider.GetRequiredService<ICookieLogger>();
+            logger.ContextLog<MqttDriver>();
+            Log.Logger.Information("MqttDriver started");
+            
+            if (IsConnected) return;
+            
+            await _connectSub.StartAsync(token);
+            IsConnected = MqttClient.IsConnected;
+            logger.ContextLog<MqttDriver>($"The MQTT client is connected: {IsConnected}");
+            Log.Logger.Information($"The MQTT client is connected: {IsConnected}");
+        }
     }
 
     public async Task StopAsync(CancellationToken token)
     {
-        if (!IsConnected) return;
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ICookieLogger>();
+            logger.ContextLog<MqttDriver>("MqttDriver stopped");
 
-        await _connectSub.StopAsync(token);
-        IsConnected = MqttClient.IsConnected;
-        IsSubscribed = false;
-        log.Information($"The MQTT client is disconnected: {!IsConnected}");
+            if (!IsConnected) return;
+
+            await _connectSub.StopAsync(token);
+            IsConnected = MqttClient.IsConnected;
+            IsSubscribed = false;
+            logger.ContextLog<MqttDriver>($"The MQTT client is disconnected: {!IsConnected}");
+        }
     }
 
     #endregion
@@ -94,13 +109,11 @@ public class MqttDriver : Driver, IHostedService
     {
         _subscribeSub.SubscribeToTopic(topic);
         IsSubscribed = true;
-        log.Information($"Subscribed to topic {topic}");
     }
 
     public Task Unsubscribe(string topic)
     {
         _subscribeSub.UnsubscribeFromTopic(topic);
-        log.Information($"Unsubscribed from topic {topic}");
         return Task.CompletedTask;
     }
     
@@ -111,7 +124,6 @@ public class MqttDriver : Driver, IHostedService
     public async Task Publish(string topic, string payload)
     {
         await _publishSub.PublishPayload(topic, payload);
-        log.Information($"MQTT client published payload: {payload} to topic: {topic}");
     }
 
     #endregion

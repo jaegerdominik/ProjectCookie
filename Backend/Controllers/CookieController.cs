@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectCookie.DAL.Entities;
 using ProjectCookie.Services.BaseInterfaces;
+using ProjectCookie.Services.MQTT;
 
 namespace ProjectCookie.Controllers;
 
@@ -11,10 +10,14 @@ namespace ProjectCookie.Controllers;
 public class CookieController : ControllerBase
 {
     private readonly IGlobalService _globalService;
+    private readonly MqttDriver _driver;
     
-    public CookieController(IGlobalService globalService)
+    public CookieController(IGlobalService globalService, MqttDriver driver)
     {
         _globalService = globalService;
+        _driver = driver;
+
+        _driver.StartAsync(new CancellationToken());
     }
     
     
