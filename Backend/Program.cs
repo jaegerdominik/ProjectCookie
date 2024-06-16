@@ -3,6 +3,16 @@ using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.DAL.UnitOfWork;
 using ProjectCookie.Services;
 using ProjectCookie.Services.BaseInterfaces;
+using ProjectCookie.Services.MQTT;
+
+CreateHostBuilder(args).Build().Run();
+
+static IHostBuilder CreateHostBuilder(string[] args) =>
+    Host.CreateDefaultBuilder(args)
+        .ConfigureServices((hostContext, services) =>
+        {
+            services.AddHostedService<MqttDriver>();
+        });
 
 var builder = WebApplication.CreateBuilder(args);
 

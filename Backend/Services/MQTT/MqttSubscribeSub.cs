@@ -1,4 +1,4 @@
-﻿using MQTTnet.Extensions.ManagedClient;
+﻿using MQTTnet.Client;
 
 namespace ProjectCookie.Services.MQTT;
 
@@ -16,7 +16,11 @@ public class MqttSubscribeSub
     
     public async void SubscribeToTopic(string topic)
     {
-        await _driver.MqttClient.SubscribeAsync(topic);
+        MqttClientSubscribeOptions mqttSubscribeOptions = new MqttClientSubscribeOptionsBuilder()
+            .WithTopicFilter(f => { f.WithTopic(topic); })
+            .Build();
+        
+        await _driver.MqttClient.SubscribeAsync(mqttSubscribeOptions);
     }
     
     public async void UnsubscribeFromTopic(string topic)
