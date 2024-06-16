@@ -187,15 +187,28 @@ public class MqttDriver : Driver, IHostedService
                 break;
             
             case "adswe_mqtt_cookie_user":
+                Log.Logger.Information("MESSAGE Received for user");
+                
                 ArraySegment<byte> userData = eventArgs.ApplicationMessage.PayloadSegment;
                 string userMessage = Encoding.UTF8.GetString(userData);
                 
+                Log.Logger.Information("user's msg: " + userMessage);
+                
                 User newUser2 = new User() { Username = userMessage }; // "carlos"
+                Log.Logger.Information("user's name: " + newUser2.Username);
 
                 using (var scope = _scopeFactory.CreateScope())
                 {
+                    Log.Logger.Information("scope: " + scope.ToString());
+
                     var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
-                    await globalService.UserService.Create(newUser2);
+                    
+                    Log.Logger.Information("global: " + globalService.ToString());
+
+                    ItemResponseModel<User> us = await globalService.UserService.Create(newUser2);
+                    Log.Logger.Information("DONE creating:");
+                    Log.Logger.Information("us.data: " + us.Data);
+                    Log.Logger.Information("us.haserror: " + us.HasError);
                 }
                 
                 break;

@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using ProjectCookie.DAL.Entities;
 using ProjectCookie.Services.BaseInterfaces;
 using ProjectCookie.Services.MQTT;
 using ProjectCookie.Services.Response;
+using Serilog;
 
 namespace ProjectCookie.Controllers;
 
@@ -49,10 +51,22 @@ public class JoinController : ControllerBase
     }
 
     [HttpPut("{username}")]
-    public async Task<IActionResult> CreateUser(string username, [FromBody] string username2)
+    public async Task<IActionResult> CreateUser(string username)
     {
         await _driver.Publish("adswe_mqtt_cookie_user", username);
         return Ok();
     }
+    
+    [HttpPost]
+    public IActionResult Join([FromBody] JoinRequestModel model)
+    {
+        // model.Username will contain the username sent in JSON format
+        // Example: Return a success message
+        return Ok($"Joined user: {model.Username}");
+    }
 }
 
+public class JoinRequestModel
+{
+    public string Username { get; set; }
+}

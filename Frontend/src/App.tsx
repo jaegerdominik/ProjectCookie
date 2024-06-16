@@ -10,11 +10,10 @@ function App() {
     const handleJoin = () => {
         if (username) {
             fetch(`https://localhost:7031/api/join/${username}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: username
+                method: "PUT"
             })
-            .then(response => response.json());
+            .catch(e => console.log(e));
+            
             
             navigate('/game', { state: { username } });
         } else {

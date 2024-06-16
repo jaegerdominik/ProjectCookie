@@ -142,7 +142,7 @@ function GamePage() {
                 fetch(`https://localhost:7031/api/cookie/publish`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: `${score}|${formatTime(time)}|${username}`
+                    body: JSON.stringify({ specialScoreString: `${score}|${formatTime(time)}|${username}` })
                 })
                 .then(response => response.json());
             }
