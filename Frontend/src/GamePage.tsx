@@ -1,28 +1,38 @@
-﻿import React, { useEffect, useState, useRef } from 'react';
+﻿import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './GamePage.css'; // Import der neuen CSS-Datei
 import cookieImage from './images/cookie.svg';
 import figureImage from './images/figure.png';
 import HealthBar from './HealthBar';
 
+interface LocationState {
+    username: string;
+}
+
+interface Highscore {
+    username: string;
+    score: number;
+    time: string;
+}
+
 function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { username } = location.state || { username: 'Guest' };
+    const { username } = (location.state as LocationState) || { username: 'Guest' };
 
-    const [figures, setFigures] = useState([]);
-    const [lives, setLives] = useState(10);
-    const [score, setScore] = useState(0); // Score-Tracker
-    const [time, setTime] = useState(0); // Zeit-Tracker in Millisekunden
-    const [isGameOver, setIsGameOver] = useState(false);
-    const [isGameStarted, setIsGameStarted] = useState(false);
-    const [highscores, setHighscores] = useState([
+    const [figures, setFigures] = useState<{ id: number; x: number; y: number }[]>([]);
+    const [lives, setLives] = useState<number>(10);
+    const [score, setScore] = useState<number>(0); // Score-Tracker
+    const [time, setTime] = useState<number>(0); // Zeit-Tracker in Millisekunden
+    const [isGameOver, setIsGameOver] = useState<boolean>(false);
+    const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
+    const [highscores, setHighscores] = useState<Highscore[]>([
         { username: 'FirstUsername', score: 124, time: '00:03,00' },
         { username: 'SecondUsername', score: 14, time: '01:03,00' },
     ]); // Beispiel-Highscores
-    const spawnInterval = useRef(2000); // Start-Intervall: 2000ms
-    const intervalId = useRef(null);
-    const timerId = useRef(null);
+    const spawnInterval = useRef<number>(2000); // Start-Intervall: 2000ms
+    const intervalId = useRef<NodeJS.Timeout | null>(null);
+    const timerId = useRef<number | null>(null);
 
     const spawnFigure = () => {
         const centerX = window.innerWidth / 2;
@@ -46,7 +56,7 @@ function GamePage() {
 
         // Verkürze das Intervall und setze es neu
         spawnInterval.current = Math.max(spawnInterval.current * 0.98, 500); // Minimum Intervall: 500ms
-        clearInterval(intervalId.current);
+        if (intervalId.current) clearInterval(intervalId.current);
         intervalId.current = setInterval(spawnFigure, spawnInterval.current);
     };
 
@@ -55,12 +65,14 @@ function GamePage() {
 
         intervalId.current = setInterval(spawnFigure, spawnInterval.current);
 
-        return () => clearInterval(intervalId.current);
+        return () => {
+            if (intervalId.current) clearInterval(intervalId.current);
+        };
     }, [isGameStarted, isGameOver]);
 
     useEffect(() => {
         if (!isGameStarted || isGameOver) {
-            cancelAnimationFrame(timerId.current);
+            if (timerId.current) cancelAnimationFrame(timerId.current);
             return;
         }
 
@@ -73,28 +85,30 @@ function GamePage() {
 
         timerId.current = requestAnimationFrame(updateTimer);
 
-        return () => cancelAnimationFrame(timerId.current);
+        return () => {
+            if (timerId.current) cancelAnimationFrame(timerId.current);
+        };
     }, [isGameStarted, isGameOver, time]);
 
-    const handleFigureClick = (id) => {
+    const handleFigureClick = (id: number) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
         setScore((prevScore) => prevScore + 1); // Erhöhe den Score bei Klick
     };
 
-    const handleAnimationEnd = (id) => {
+    const handleAnimationEnd = (id: number) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
         setLives((prevLives) => {
             const newLives = Math.max(prevLives - 1, 0);
             if (newLives === 0) {
                 setIsGameOver(true);
-                clearInterval(intervalId.current);
-                cancelAnimationFrame(timerId.current);
+                if (intervalId.current) clearInterval(intervalId.current);
+                if (timerId.current) cancelAnimationFrame(timerId.current);
             }
             return newLives;
         });
     };
 
-    const formatTime = (milliseconds) => {
+    const formatTime = (milliseconds: number) => {
         const totalSeconds = Math.floor(milliseconds / 1000);
         const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
         const seconds = String(totalSeconds % 60).padStart(2, '0');
@@ -111,7 +125,7 @@ function GamePage() {
         setIsGameStarted(true);
         spawnInterval.current = 2000;
 
-        clearInterval(intervalId.current);
+        if (intervalId.current) clearInterval(intervalId.current);
         intervalId.current = setInterval(spawnFigure, spawnInterval.current);
 
         const startTime = Date.now();
@@ -135,7 +149,7 @@ function GamePage() {
         navigate('/');
     };
 
-    const formatHighscoreEntry = (username, score, time) => {
+    const formatHighscoreEntry = (username: string, score: number, time: string) => {
         const maxLength = 50; // Maximale Länge der Punkte-Linie
         const scoreStr = String(score);
         const timeStr = `${time} (${scoreStr})`;
@@ -209,6 +223,9 @@ function GamePage() {
                     )}
                 </div>
             )}
+            <div className="copyright">
+                &copy; Martin Haring, Dominik Jäger, Raphael Klein
+            </div>
         </div>
     );
 }
