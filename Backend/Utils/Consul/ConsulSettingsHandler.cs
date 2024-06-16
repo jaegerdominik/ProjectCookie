@@ -36,4 +36,53 @@ public class ConsulSettingsHandler : ISettingsHandler
             }
         }
     }
+    
+    /* Consul Key/Value Pairs */
+    /*
+    |** CookieData/Database:
+{
+"DatabaseName": "johann",
+"Port": "5433",
+"Password": "pass",
+"Username": "admin",
+"Server": "host.docker.internal"
+}
+    */
+    /*
+    |** CookieData/Logger:
+{
+  "Host": {
+    "Port": "80",
+    "Protocol": "http",
+    "SettingsFile": "SimulationSettings/settings.json"
+  },
+  "Serilog": {
+    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File", "Serilog.Enrichers.Environment" ],
+    "MinimumLevel": {
+      "Default": "Verbose",
+      "Override": {
+        "Microsoft": "Debug",
+        "System": "Debug"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Logs/log.log",
+          "rollingInterval": "Day"
+        }
+      }
+    ],
+    "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+  }
+}
+    */
 }

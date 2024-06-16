@@ -29,7 +29,7 @@ public class ConsulTest : BaseUnitTest
             bool connected = await cli.Connect();
             Assert.That(connected, Is.True);
             
-            string info = await cli.GetKey("CookieManagement/Logger");
+            string info = await cli.GetKey("CookieData/Logger");
             Assert.That(info, Is.Not.Null);
         }
     }
