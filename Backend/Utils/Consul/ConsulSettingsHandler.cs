@@ -15,7 +15,7 @@ public class ConsulSettingsHandler : ISettingsHandler
     {
         using (ConsulClient cli = new ConsulClient())
         {
-            Boolean conn = await cli.Connect();
+            bool conn = await cli.Connect();
 
             if (conn)
             {
@@ -33,9 +33,7 @@ public class ConsulSettingsHandler : ISettingsHandler
                     WarningException myEx = new WarningException("Error during reading configuration", ex);
                     Console.WriteLine(myEx);
                 }
-
             }
-
         }
     }
 }
