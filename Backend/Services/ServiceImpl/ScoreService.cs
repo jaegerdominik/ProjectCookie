@@ -6,8 +6,7 @@ namespace ProjectCookie.Services.ServiceImpl;
 
 public class ScoreService : Service<Score>
 {
-    public ScoreService(ICookieLogger logger, IUnitOfWork unitOfWork, IPostgresRepository<Score> repo)
-        : base(unitOfWork, repo, logger) { }
+    public ScoreService(IScoreRepository repo) : base(repo) { }
 
     
     public override async Task<bool> Validate(Score entity)
@@ -16,7 +15,7 @@ public class ScoreService : Service<Score>
         {
             if (entity.Points == null)
             {
-                ValidationDictionary.AddError("Username missing", "You need to specify a name for your User");
+                ValidationDictionary.AddError("Points missing", "You need points.");
             }
         }
         else

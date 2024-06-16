@@ -12,11 +12,11 @@ public class GlobalService : IGlobalService
     public ScoreService ScoreService { get; set; }
 
     
-    public GlobalService(IUnitOfWork uow, ICookieLogger Logger)
+    public GlobalService(IUnitOfWork uow)
     {
         UnitOfWork = uow;
 
-        UserService = new UserService(Logger, UnitOfWork, UnitOfWork.Users);
-        ScoreService = new ScoreService(Logger, UnitOfWork, UnitOfWork.Scores);
+        UserService = new UserService(UnitOfWork.Users);
+        ScoreService = new ScoreService(UnitOfWork.Scores);
     }
 }

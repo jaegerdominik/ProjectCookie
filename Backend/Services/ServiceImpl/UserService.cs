@@ -1,13 +1,11 @@
 using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.DAL.Entities;
-using ProjectCookie.Utils.Logging;
 
 namespace ProjectCookie.Services.ServiceImpl;
 
 public class UserService : Service<User>
 {
-    public UserService(ICookieLogger logger, IUnitOfWork unitOfWork, IPostgresRepository<User> repo)
-        : base(unitOfWork, repo, logger) { }
+    public UserService(IUserRepository repo) : base(repo) { }
 
     
     public override async Task<bool> Validate(User entity)

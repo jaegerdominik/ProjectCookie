@@ -36,7 +36,7 @@ public class JoinController : ControllerBase
     [HttpPost("UserUpdate/{id}")]
     [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ItemResponseModel<User>))]
-    public async Task<ActionResult<ItemResponseModel<User>>>  UserUpdate([Required][FromBody]User user, string id)
+    public async Task<ActionResult<ItemResponseModel<User>>> UserUpdate([Required][FromBody]User user, string id)
     {
         int idAsInt = int.Parse(id);
         ActionResult <ItemResponseModel<User>> response = await _globalService.UserService.Update(idAsInt, user);

@@ -10,20 +10,14 @@ namespace ProjectCookie.Services;
 
 public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entity
 {
-    protected IUnitOfWork UnitOfWork;
     protected IPostgresRepository<TEntity> Repo;
-    protected Serilog.ILogger Logger;
 
     protected IModelStateWrapper ValidationDictionary;
     protected ModelStateDictionary ModelStateDictionary;
-    protected ICookieLogger CookieLogger;
     
-    public Service(IUnitOfWork unitOfWork, IPostgresRepository<TEntity> repo, ICookieLogger logger)
+    public Service(IPostgresRepository<TEntity> repo)
     {
-        UnitOfWork = unitOfWork;
         Repo = repo;
-        Logger = logger.ContextLog<Service<TEntity>>();
-        CookieLogger = logger;
     }
 
     public abstract Task<bool> Validate(TEntity entity);

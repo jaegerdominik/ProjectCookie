@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.DAL.UnitOfWork;
+using ProjectCookie.Services;
+using ProjectCookie.Services.BaseInterfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PostgresDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IGlobalService, GlobalService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
