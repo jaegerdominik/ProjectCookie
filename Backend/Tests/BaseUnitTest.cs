@@ -31,9 +31,8 @@ public class BaseUnitTest
 
         Settings = _serviceProvider.GetRequiredService<ISettings>();
         SettingsHandler = _serviceProvider.GetRequiredService<ISettingsHandler>();
-        CookieLogger = _serviceProvider.GetRequiredService<ICookieLogger>();
-        
         await SettingsHandler.Load();
+        CookieLogger = _serviceProvider.GetRequiredService<ICookieLogger>();
         await CookieLogger.Init();
         
         UnitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();

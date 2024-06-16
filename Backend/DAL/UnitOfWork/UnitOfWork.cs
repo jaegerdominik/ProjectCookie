@@ -1,21 +1,20 @@
 ﻿using ProjectCookie.DAL.BaseInterfaces;
+using ProjectCookie.DAL.Repository;
 
-namespace ProjectCookie.DAL.UnitOfWork
+namespace ProjectCookie.DAL.UnitOfWork;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    public PostgresDbContext Context;
+
+    public UnitOfWork(PostgresDbContext context)
     {
-        public PostgresDbContext Context { get; private set; } = null;
-        public IUserRepository Users { get; }
-        public IScoreRepository Scores { get; }
-
-        public UnitOfWork(PostgresDbContext context)
-        {
-            Context = context;
-        }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await Context.SaveChangesAsync();
-        }
+        Context = context;
     }
+
+
+    public IUserRepository Users => new UserRepository(Context);
+    public IScoreRepository Scores => new ScoreRepository(Context);
+
+    public async Task<int> SaveChangesAsync() => await Context.SaveChangesAsync();
 }
