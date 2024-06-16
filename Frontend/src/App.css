@@ -45,6 +45,7 @@
   cursor: pointer;
   transition: background-color 0.3s;
   z-index: 2; /* Sicherstellen, dass der Button über den fallenden Cookies liegt */
+  margin-top: 10px; /* Abstand zwischen den Buttons */
 }
 
 .button:hover {

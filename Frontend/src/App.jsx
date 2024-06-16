@@ -15,6 +15,10 @@ function App() {
         }
     };
 
+    const handleCredits = () => {
+        navigate('/credits');
+    };
+
     useEffect(() => {
         const createCookie = () => {
             const cookie = document.createElement('div');
@@ -50,6 +54,9 @@ function App() {
             />
             <button onClick={handleJoin} className="button">
                 Join
+            </button>
+            <button onClick={handleCredits} className="button credits-button">
+                Credits
             </button>
         </div>
     );
