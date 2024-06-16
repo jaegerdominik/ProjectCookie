@@ -17,7 +17,7 @@ function CreditsPage() {
             <p>Developed by:</p>
             <ul>
                 <li>
-                    <img src={glumandaImage} alt="Glumanda Icon" className="developer-icon" />
+                    <img src={bisasamImage} alt="Glumanda Icon" className="developer-icon" />
                     Martin Haring
                 </li>
                 <li>
@@ -25,7 +25,7 @@ function CreditsPage() {
                     Dominik Jäger
                 </li>
                 <li>
-                    <img src={bisasamImage} alt="Bisasam Icon" className="developer-icon" />
+                    <img src={glumandaImage} alt="Bisasam Icon" className="developer-icon" />
                     Raphael Klein
                 </li>
             </ul>
