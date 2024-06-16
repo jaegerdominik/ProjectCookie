@@ -32,6 +32,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MqttDriver>();
 builder.Services.AddHostedService(provider => provider.GetRequiredService<MqttDriver>());
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,6 +56,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use the CORS policy
+app.UseCors("AllowLocalhost");
 
 app.UseAuthorization();
 
