@@ -9,16 +9,37 @@ interface LocationState {
     username: string;
 }
 
+interface IScore {
+    iD: number;
+    points: number;
+    time: Date;
+    fK_User: number;
+}
+
+interface IUser {
+    iD: number;
+    username: string;
+}
+
 interface Highscore {
     username: string;
     score: number;
     time: string;
 }
 
+/*
+                    {currentScores.map((entry, index) => (
+                        <li key={index}>
+                            {formatHighscoreEntry(entry.username, entry.score, entry.time)}
+                        </li>
+                    ))}
+ */
+
 function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { username } = (location.state as LocationState) || { username: 'Guest' };
+    let helpBool = false;
 
     const [figures, setFigures] = useState<{ id: number; x: number; y: number }[]>([]);
     const [lives, setLives] = useState<number>(10);
@@ -26,10 +47,10 @@ function GamePage() {
     const [time, setTime] = useState<number>(0); // Zeit-Tracker in Millisekunden
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
-    const [highscores, setHighscores] = useState<Highscore[]>([
-        { username: 'FirstUsername', score: 124, time: '00:03,00' },
-        { username: 'SecondUsername', score: 14, time: '01:03,00' },
-    ]); // Beispiel-Highscores
+    const [highscores, setHighscores] = useState<Highscore[]>();
+    const [currentScores, setCurrentScores] = useState<IScore[]>();
+    const [currentUsers, setCurrentUsers] = useState<IUser[]>();
+    const [error, setError] = useState<string | null>();
     const spawnInterval = useRef<number>(2000); // Start-Intervall: 2000ms
     const intervalId = useRef<NodeJS.Timeout | null>(null);
     const timerId = useRef<number | null>(null);
@@ -90,6 +111,37 @@ function GamePage() {
         };
     }, [isGameStarted, isGameOver, time]);
 
+    useEffect(() => {
+        fetch(`https://localhost:7031/api/cookie/scores`, { method: 'GET', mode: 'no-cors', })
+            .then(response => response.json())
+            .then((fetchedScores: IScore[]) => setCurrentScores(fetchedScores))
+            .catch(error => {
+                setError("There was an error fetching the scores!");
+                console.error(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        fetch(`https://localhost:7031/api/cookie/users`, { method: 'GET', mode: 'no-cors', })
+            .then(response => response.json())
+            .then((fetchedUsers: IUser[]) => setCurrentUsers(fetchedUsers))
+            .catch(error => {
+                setError("There was an error fetching the users!");
+                console.error(error);
+            });
+    }, []);
+    
+    if (error) return <div>{error}</div>;
+    if (!currentScores) return <div>Loading scores...</div>;
+    if (!currentUsers) return <div>Loading users...</div>;
+
+    if (currentScores && currentUsers && !helpBool)
+    {
+        console.log(currentScores)
+        console.log(currentUsers)
+        helpBool = true
+    }
+    
     const handleFigureClick = (id: number) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
         setScore((prevScore) => prevScore + 1); // Erhöhe den Score bei Klick
@@ -175,11 +227,7 @@ function GamePage() {
             <div className="highscore">
                 <div className="highscore-title">Highscore:</div>
                 <ul className="highscore-list">
-                    {highscores.map((entry, index) => (
-                        <li key={index}>
-                            {formatHighscoreEntry(entry.username, entry.score, entry.time)}
-                        </li>
-                    ))}
+
                 </ul>
             </div>
             <img src={cookieImage} alt="Cookie" className="cookie-image" />

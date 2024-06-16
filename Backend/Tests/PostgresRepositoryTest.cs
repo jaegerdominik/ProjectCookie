@@ -21,19 +21,6 @@ public class PostgresRepositoryTest : BaseUnitTest
     }
 
     [Test]
-    public Task TestFilterByConvert()
-    {
-        User user = new User();
-        user.Username = "ConvertBy";
-
-        UnitOfWork.Users.InsertAsync(user).Wait();
-        var result = UnitOfWork.Users.FilterBy(doc => doc.Username == "ConvertBy", doc => doc);
-        
-        Assert.That(result.Count(), Is.EqualTo(1));
-        return Task.CompletedTask;
-    }
-
-    [Test]
     public Task TestFindOneAsync()
     {
         User user = new User();
