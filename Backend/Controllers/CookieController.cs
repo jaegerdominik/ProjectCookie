@@ -40,5 +40,12 @@ public class CookieController : ControllerBase
         List<User> users = await _globalService.UserService.Get();
         return Ok(users);
     }
+    
+    [HttpPut("publish")]
+    public async Task<IActionResult> CreateUser([FromBody] string specialScoreString)
+    {
+        await _driver.Publish("adswe_mqtt_cookie_score", specialScoreString);
+        return Ok();
+    }
 }
 

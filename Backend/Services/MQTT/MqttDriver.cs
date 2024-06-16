@@ -67,6 +67,8 @@ public class MqttDriver : Driver, IHostedService
 
     public async Task StartAsync(CancellationToken token)
     {
+        if (IsConnected) return;
+        
         using (IServiceScope scope = _scopeFactory.CreateScope())
         {
             ICookieLogger logger = scope.ServiceProvider.GetRequiredService<ICookieLogger>();

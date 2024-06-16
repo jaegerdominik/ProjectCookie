@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectCookie.DAL.Entities;
 using ProjectCookie.Services.BaseInterfaces;
+using ProjectCookie.Services.MQTT;
 using ProjectCookie.Services.Response;
 
 namespace ProjectCookie.Controllers;
@@ -12,10 +13,14 @@ namespace ProjectCookie.Controllers;
 public class JoinController : ControllerBase
 {
     private readonly IGlobalService _globalService;
-    
-    public JoinController(IGlobalService globalService)
+    private readonly MqttDriver _driver;
+
+    public JoinController(IGlobalService globalService, MqttDriver driver)
     {
         _globalService = globalService;
+        _driver = driver;
+        
+        _driver.StartAsync(new CancellationToken());
     }
     
             
@@ -41,6 +46,13 @@ public class JoinController : ControllerBase
         int idAsInt = int.Parse(id);
         ActionResult <ItemResponseModel<User>> response = await _globalService.UserService.Update(idAsInt, user);
         return response;
+    }
+
+    [HttpPut("{username}")]
+    public async Task<IActionResult> CreateUser(string username, [FromBody] string username2)
+    {
+        await _driver.Publish("adswe_mqtt_cookie_user", username);
+        return Ok();
     }
 }
 

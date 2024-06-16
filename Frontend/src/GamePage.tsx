@@ -145,6 +145,13 @@ function GamePage() {
                 setIsGameOver(true);
                 if (intervalId.current) clearInterval(intervalId.current);
                 if (timerId.current) cancelAnimationFrame(timerId.current);
+
+                fetch(`https://localhost:7031/api/cookie/publish`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(`${score}|${formatTime(time)}|${username}`)
+                })
+                .then(response => response.json());
             }
             return newLives;
         });

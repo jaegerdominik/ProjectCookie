@@ -9,6 +9,13 @@ function App() {
 
     const handleJoin = () => {
         if (username) {
+            fetch(`https://localhost:7031/api/join/${username}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(username)
+            })
+            .then(response => response.json());
+            
             navigate('/game', { state: { username } });
         } else {
             alert('Please enter a username');
