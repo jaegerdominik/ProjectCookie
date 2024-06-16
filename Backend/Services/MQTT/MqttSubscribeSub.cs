@@ -25,6 +25,8 @@ public class MqttSubscribeSub
     
     public async void UnsubscribeFromTopic(string topic)
     {
+        if (!_driver.IsSubscribed) return;
+        
         await _driver.MqttClient.UnsubscribeAsync(topic);
     }
 }

@@ -1,8 +1,9 @@
 using NUnit.Framework;
 using ProjectCookie.DAL.Entities;
 
-namespace ProjectCookie.Tests.Repository;
+namespace ProjectCookie.Tests;
 
+[TestFixture, Order(2)]
 public class PostgresRepositoryTest : BaseUnitTest
 {
     [Test]

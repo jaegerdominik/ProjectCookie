@@ -60,6 +60,9 @@ public class BaseUnitTest
     }
 
         
-    [Test (ExpectedResult = true)]
-    public async Task<bool> TestSetup() => await Task.FromResult(_services.Count != 0);
+    [Test]
+    public async Task TestSetup()   
+    {
+        Assert.That(_services.Count, Is.GreaterThan(0));
+    }
 }

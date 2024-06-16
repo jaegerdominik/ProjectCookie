@@ -3,6 +3,7 @@ using ProjectCookie.Utils.Consul;
 
 namespace ProjectCookie.Tests;
 
+[TestFixture, Order(1)]
 public class ConsulTest : BaseUnitTest
 {
     [Test]

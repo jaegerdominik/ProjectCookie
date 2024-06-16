@@ -3,6 +3,7 @@ using ProjectCookie.Services.MQTT;
 
 namespace ProjectCookie.Tests;
 
+[TestFixture, Order(5)]
 public class MqttTest : BaseUnitTest
 {
     private MqttDriver _testDriver;
