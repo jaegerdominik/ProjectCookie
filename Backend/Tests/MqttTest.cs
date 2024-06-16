@@ -1,5 +1,3 @@
-using System.Text;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using ProjectCookie.Services.MQTT;
 
@@ -21,8 +19,7 @@ public class MqttTest : BaseUnitTest
 
         await ValidateAfter(2000);
 
-        await Unsubscribe();
-        await Disconnect();
+        await Cleanup();
     }
 
     private async Task PrepareTestData()
@@ -34,8 +31,8 @@ public class MqttTest : BaseUnitTest
 
     private async Task Connect()
     {
-        await _testDriver.Connect();
-        Assert.That(_testDriver.MqttClient.IsStarted, Is.True);
+        await _testDriver.StartAsync(new CancellationToken());
+        Assert.That(_testDriver.MqttClient.IsConnected, Is.True);
     }
 
     private async Task Subscribe()
@@ -46,8 +43,7 @@ public class MqttTest : BaseUnitTest
 
     private async Task Publish()
     {
-        byte[] message = Encoding.UTF8.GetBytes(_testMessage);
-        await _testDriver.Publish(_testTopic, message);
+        await _testDriver.Publish(_testTopic, _testMessage);
     }
 
     private async Task ValidateAfter(int delay)
@@ -58,15 +54,11 @@ public class MqttTest : BaseUnitTest
         Assert.That(publishedMessage, Is.EqualTo(_testMessage));
     }
     
-    private async Task Unsubscribe()
+    private async Task Cleanup()
     {
         _testDriver.Unsubscribe(_testTopic);
+        await _testDriver.StopAsync(new CancellationToken());
         Assert.That(_testDriver.IsSubscribed, Is.False);
-    }
-    
-    private async Task Disconnect()
-    {
-        await _testDriver.Disconnect();
-        Assert.That(_testDriver.MqttClient.IsStarted, Is.False);
+        Assert.That(_testDriver.MqttClient.IsConnected, Is.False);
     }
 }

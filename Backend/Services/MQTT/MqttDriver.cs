@@ -5,12 +5,11 @@ using ProjectCookie.Utils.Logging;
 
 namespace ProjectCookie.Services.MQTT;
 
-public class MqttDriver : Driver
+public class MqttDriver : Driver, IHostedService
 {
-    public IManagedMqttClient MqttClient { get; private set; }
-    public ManagedMqttClientOptions MqttClientOptions { get; private set; }
+    public IMqttClient MqttClient { get; private set; }
+    public MqttClientOptions MqttClientOptions { get; private set; }
     public List<string> Messages { get; private set; }
-    public bool IsSubscribed { get; private set; }
 
     private readonly string _host = "dmt.fh-joanneum.at";
     private readonly int _port = 1883;
@@ -28,16 +27,15 @@ public class MqttDriver : Driver
         
         Messages = new List<string>();
         
-        MqttClient = new MqttFactory().CreateManagedMqttClient();
         Random rng = new Random();
-        MqttClientOptions = new ManagedMqttClientOptionsBuilder()
-            .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-            .WithClientOptions(new MqttClientOptionsBuilder()
-                .WithClientId($"adswe_managedClientId_{rng.Next(10000, 100000)}")
-                .WithTcpServer(_host, _port)
-                .WithCredentials(Secret.MqttUsername, Secret.MqttUsername)
-                .WithCleanSession()
-                .Build())
+        string clientId = $"adswe_client_id_{rng.Next(10000, 100000)}";
+        
+        MqttClient = new MqttFactory().CreateMqttClient();
+        MqttClientOptions = new MqttClientOptionsBuilder()
+            .WithClientId(clientId)
+            .WithTcpServer(_host, _port)
+            .WithCredentials(Secret.MqttUsername, Secret.MqttPassword)
+            .WithCleanSession()
             .Build();
 
         MqttClient.ConnectedAsync += async e =>
@@ -62,20 +60,20 @@ public class MqttDriver : Driver
 
     #region Connect
 
-    public async Task Connect()
+    public async Task StartAsync(CancellationToken token)
     {
         if (IsConnected) return;
         
-        await _connectSub.StartAsync();
+        await _connectSub.StartAsync(token);
         IsConnected = MqttClient.IsConnected;
         log.Information($"The MQTT client is connected: {IsConnected}");
     }
 
-    public async Task Disconnect()
+    public async Task StopAsync(CancellationToken token)
     {
         if (!IsConnected) return;
 
-        await _connectSub.StopAsync();
+        await _connectSub.StopAsync(token);
         IsConnected = MqttClient.IsConnected;
         IsSubscribed = false;
         log.Information($"The MQTT client is disconnected: {!IsConnected}");
@@ -110,7 +108,7 @@ public class MqttDriver : Driver
 
     #region Publish
 
-    public async Task Publish(string topic, byte[] payload)
+    public async Task Publish(string topic, string payload)
     {
         await _publishSub.PublishPayload(topic, payload);
         log.Information($"MQTT client published payload: {payload} to topic: {topic}");

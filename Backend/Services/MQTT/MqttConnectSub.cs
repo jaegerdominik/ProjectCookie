@@ -1,15 +1,19 @@
-﻿namespace ProjectCookie.Services.MQTT;
+﻿using MQTTnet.Client;
+using MqttClientDisconnectOptions = MQTTnet.Client.MqttClientDisconnectOptions;
+
+namespace ProjectCookie.Services.MQTT;
 
 public class MqttConnectSub
 {
     private MqttDriver _driver;
     public MqttConnectSub(MqttDriver driver) => _driver = driver;
 
-    public async Task StartAsync()
+    public async Task StartAsync(CancellationToken token)
     {
         try
         {
-            await _driver.MqttClient.StartAsync(_driver.MqttClientOptions);
+            _driver.log.Information($"Connecting...");
+            await _driver.MqttClient.ConnectAsync(_driver.MqttClientOptions, token);
         }
         catch (Exception ex)
         {
@@ -17,11 +21,16 @@ public class MqttConnectSub
         }
     }
     
-    public async Task StopAsync()
+    public async Task StopAsync(CancellationToken token)
     {
         try
         {
-            await _driver.MqttClient.StopAsync();
+            MqttClientDisconnectOptions disconnectOptions = new MqttClientDisconnectOptions()
+            {
+                ReasonString = "Normal disconnection",
+                Reason = MqttClientDisconnectOptionsReason.NormalDisconnection
+            };
+            await _driver.MqttClient.DisconnectAsync(disconnectOptions);
         }
         catch (Exception ex)
         {

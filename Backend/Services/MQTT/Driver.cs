@@ -7,6 +7,8 @@ public abstract class Driver
 {
     public string Name { get; set; }
     public bool IsConnected { get; protected set; }
+    public bool IsSubscribed { get; protected set; }
+
     public ILogger log { get; set; }
 
     public Driver(ICookieLogger logger, string name)
