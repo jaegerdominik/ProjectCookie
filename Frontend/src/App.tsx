@@ -12,7 +12,7 @@ function App() {
             fetch(`https://localhost:7031/api/join/${username}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(username)
+                body: username
             })
             .then(response => response.json());
             

@@ -31,7 +31,6 @@ function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { username } = (location.state as LocationState) || { username: 'Guest' };
-    let helpBool = false;
 
     const [figures, setFigures] = useState<{ id: number; x: number; y: number }[]>([]);
     const [lives, setLives] = useState<number>(10);
@@ -126,12 +125,6 @@ function GamePage() {
     if (!currentScores.length) return <div>Loading scores...</div>;
     if (!currentUsers.length) return <div>Loading users...</div>;
 
-    if (currentScores.length && currentUsers.length && !helpBool) {
-        console.log(currentScores);
-        console.log(currentUsers);
-        helpBool = true;
-    }
-
     const handleFigureClick = (id: number) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
         setScore((prevScore) => prevScore + 1);
@@ -149,7 +142,7 @@ function GamePage() {
                 fetch(`https://localhost:7031/api/cookie/publish`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(`${score}|${formatTime(time)}|${username}`)
+                    body: `${score}|${formatTime(time)}|${username}`
                 })
                 .then(response => response.json());
             }
