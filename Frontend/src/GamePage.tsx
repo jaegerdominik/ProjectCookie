@@ -27,14 +27,6 @@ interface Highscore {
     time: string;
 }
 
-/*
-                    {currentScores.map((entry, index) => (
-                        <li key={index}>
-                            {formatHighscoreEntry(entry.username, entry.score, entry.time)}
-                        </li>
-                    ))}
- */
-
 function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -43,22 +35,22 @@ function GamePage() {
 
     const [figures, setFigures] = useState<{ id: number; x: number; y: number }[]>([]);
     const [lives, setLives] = useState<number>(10);
-    const [score, setScore] = useState<number>(0); // Score-Tracker
-    const [time, setTime] = useState<number>(0); // Zeit-Tracker in Millisekunden
+    const [score, setScore] = useState<number>(0);
+    const [time, setTime] = useState<number>(0);
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
-    const [highscores, setHighscores] = useState<Highscore[]>();
-    const [currentScores, setCurrentScores] = useState<IScore[]>();
-    const [currentUsers, setCurrentUsers] = useState<IUser[]>();
-    const [error, setError] = useState<string | null>();
-    const spawnInterval = useRef<number>(2000); // Start-Intervall: 2000ms
+    const [highscores, setHighscores] = useState<Highscore[]>([]);
+    const [currentScores, setCurrentScores] = useState<IScore[]>([]);
+    const [currentUsers, setCurrentUsers] = useState<IUser[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const spawnInterval = useRef<number>(2000);
     const intervalId = useRef<NodeJS.Timeout | null>(null);
     const timerId = useRef<number | null>(null);
 
     const spawnFigure = () => {
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
-        const radius = 600; // Abstand vom Cookie (doppelt so weit)
+        const radius = 600;
 
         const spawnPoints = Array.from({ length: 18 }, (_, i) => {
             const angle = (i * 2 * Math.PI) / 18;
@@ -75,8 +67,7 @@ function GamePage() {
             { id: Date.now(), x: spawnPoint.x, y: spawnPoint.y }
         ]);
 
-        // Verkürze das Intervall und setze es neu
-        spawnInterval.current = Math.max(spawnInterval.current * 0.98, 500); // Minimum Intervall: 500ms
+        spawnInterval.current = Math.max(spawnInterval.current * 0.98, 500);
         if (intervalId.current) clearInterval(intervalId.current);
         intervalId.current = setInterval(spawnFigure, spawnInterval.current);
     };
@@ -97,7 +88,7 @@ function GamePage() {
             return;
         }
 
-        const startTime = Date.now() - time; // Behalte die aktuelle Zeit bei
+        const startTime = Date.now() - time;
 
         const updateTimer = () => {
             setTime(Date.now() - startTime);
@@ -112,7 +103,7 @@ function GamePage() {
     }, [isGameStarted, isGameOver, time]);
 
     useEffect(() => {
-        fetch(`https://localhost:7031/api/cookie/scores`, { method: 'GET', mode: 'no-cors', })
+        fetch(`https://localhost:7031/api/cookie/scores`)
             .then(response => response.json())
             .then((fetchedScores: IScore[]) => setCurrentScores(fetchedScores))
             .catch(error => {
@@ -122,7 +113,7 @@ function GamePage() {
     }, []);
 
     useEffect(() => {
-        fetch(`https://localhost:7031/api/cookie/users`, { method: 'GET', mode: 'no-cors', })
+        fetch(`https://localhost:7031/api/cookie/users`)
             .then(response => response.json())
             .then((fetchedUsers: IUser[]) => setCurrentUsers(fetchedUsers))
             .catch(error => {
@@ -130,21 +121,20 @@ function GamePage() {
                 console.error(error);
             });
     }, []);
-    
-    if (error) return <div>{error}</div>;
-    if (!currentScores) return <div>Loading scores...</div>;
-    if (!currentUsers) return <div>Loading users...</div>;
 
-    if (currentScores && currentUsers && !helpBool)
-    {
-        console.log(currentScores)
-        console.log(currentUsers)
-        helpBool = true
+    if (error) return <div>{error}</div>;
+    if (!currentScores.length) return <div>Loading scores...</div>;
+    if (!currentUsers.length) return <div>Loading users...</div>;
+
+    if (currentScores.length && currentUsers.length && !helpBool) {
+        console.log(currentScores);
+        console.log(currentUsers);
+        helpBool = true;
     }
-    
+
     const handleFigureClick = (id: number) => {
         setFigures((figures) => figures.filter((figure) => figure.id !== id));
-        setScore((prevScore) => prevScore + 1); // Erhöhe den Score bei Klick
+        setScore((prevScore) => prevScore + 1);
     };
 
     const handleAnimationEnd = (id: number) => {
@@ -192,7 +182,6 @@ function GamePage() {
         setIsGameStarted(true);
         handleRestart();
 
-        // Entfernen Sie alle fallenden Cookies
         const fallingCookies = document.querySelectorAll('.falling-cookie');
         fallingCookies.forEach(cookie => cookie.remove());
     };
@@ -202,7 +191,7 @@ function GamePage() {
     };
 
     const formatHighscoreEntry = (username: string, score: number, time: string) => {
-        const maxLength = 50; // Maximale Länge der Punkte-Linie
+        const maxLength = 50;
         const scoreStr = String(score);
         const timeStr = `${time} (${scoreStr})`;
         const dotsLength = maxLength - username.length - timeStr.length;
@@ -222,12 +211,16 @@ function GamePage() {
             <div className="info">
                 <div className="username">Hello, {username}</div>
                 <div className="score">Score: {score}</div>
-                <div className="time">Zeit: {formatTime(time)}</div> {/* Anzeige der Zeit */}
+                <div className="time">Zeit: {formatTime(time)}</div>
             </div>
             <div className="highscore">
                 <div className="highscore-title">Highscore:</div>
                 <ul className="highscore-list">
-
+                   {/* {currentScores.map((entry, index) => (
+                        <li key={index}>
+                            {formatHighscoreEntry(entry.username, entry.points, entry.time.toString())}
+                        </li>
+                    ))}*/}
                 </ul>
             </div>
             <img src={cookieImage} alt="Cookie" className="cookie-image" />
