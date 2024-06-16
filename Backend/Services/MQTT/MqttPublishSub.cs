@@ -19,7 +19,6 @@ public class MqttPublishSub
     public Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
     {
         string topic = eventArgs.ApplicationMessage.Topic;
-        _driver.log.Information($"Received message on topic: {topic}");
         
         switch (topic)
         {
@@ -27,7 +26,6 @@ public class MqttPublishSub
                 ReadOnlySpan<byte> messageData = eventArgs.ApplicationMessage.PayloadSegment;
                 string message = Encoding.UTF8.GetString(messageData);
                 
-                _driver.log.Information($"Received message: {message}");
                 _driver.Messages.Add(message);
                 break;
         }

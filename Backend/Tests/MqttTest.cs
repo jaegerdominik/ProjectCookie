@@ -25,7 +25,7 @@ public class MqttTest : BaseUnitTest
 
     private async Task PrepareTestData()
     {
-        _testDriver = new MqttDriver(CookieLogger);
+        _testDriver = null; // new MqttDriver();
         _testTopic = "adswe_mqtt_cookie_message";
         _testMessage = "Test MQTT 4 ADSWE";
     }

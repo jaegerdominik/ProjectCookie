@@ -6,14 +6,10 @@ namespace ProjectCookie.Utils.Logging;
 
 public class CookieLogger : ICookieLogger
 {
-    private readonly ISettings _settings;
     private ILogger _logger;
     private bool _isInitialized;
 
-    public CookieLogger(ISettings settings)
-    {
-        _settings = settings;
-    }
+    public CookieLogger() { }
 
 
     public ILogger ContextLog<T>(string context) where T : class
@@ -43,14 +39,10 @@ public class CookieLogger : ICookieLogger
 
     private async Task InitLogger()
     {
-        if (!_isInitialized && !string.IsNullOrEmpty(_settings.LoggerSettings))
+        if (!_isInitialized)
         {
             Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(_settings.LoggerSettings)))
-                .Build();
-            
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
@@ -58,7 +50,6 @@ public class CookieLogger : ICookieLogger
 
             _logger = Log.Logger;
             _logger.Information("Logger Initialized");
-            _logger.Information($"Could use config: {configuration}");
             _isInitialized = true;
         }
     }
