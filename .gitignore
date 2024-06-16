@@ -11,24 +11,9 @@ x64/
 [Oo]bj/
 
 # Docker
-[Bb]ackend/_docker/consul-data*
-[Bb]ackend/_docker/consul-data/*
-[Bb]ackend/_docker/consul-data/
-[Bb]ackend\_docker\consul-data*
-[Bb]ackend\_docker\consul-data\*
-[Bb]ackend\_docker\consul-data\
-[Bb]ackend/_docker/Seq*
-[Bb]ackend/_docker/Seq/*
-[Bb]ackend/_docker/Seq/
-[Bb]ackend\_docker\Seq*
-[Bb]ackend\_docker\Seq\*
-[Bb]ackend\_docker\Seq\
-[Bb]ackend/_docker/Timescaledb_data*
-[Bb]ackend/_docker/Timescaledb_data/*
-[Bb]ackend/_docker/Timescaledb_data/
-[Bb]ackend\_docker\Timescaledb_data*
-[Bb]ackend\_docker\Timescaledb_data\*
-[Bb]ackend\_docker\Timescaledb_data\
+[Bb]ackend/.docker/consul-data/
+[Bb]ackend/.docker/Seq/
+[Bb]ackend/.docker/Timescaledb_data/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
