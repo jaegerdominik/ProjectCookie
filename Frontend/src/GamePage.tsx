@@ -10,14 +10,14 @@ interface LocationState {
 }
 
 interface IScore {
-    iD: number;
+    id: number;
     points: number;
-    time: Date;
+    timestamp: string;
     fK_User: number;
 }
 
 interface IUser {
-    iD: number;
+    id: number;
     username: string;
 }
 
@@ -190,7 +190,7 @@ function GamePage() {
         navigate('/');
     };
 
-    const formatHighscoreEntry = (username: string, score: number, time: string) => {
+    const formatHighscoreEntry = (score: IScore) => {
         const maxLength = 50;
         const scoreStr = String(score);
         const timeStr = `${time} (${scoreStr})`;
@@ -199,12 +199,23 @@ function GamePage() {
 
         return (
             <div className="highscore-entry">
-                <span className="highscore-username">{username}</span>
-                <span className="highscore-dots">{dots}</span>
-                <span className="highscore-time">{timeStr}</span>
+                <span className="highscore-username">{getNameById(currentScores, currentUsers, score.id)}</span>
+                <span className="highscore-dots">{score.points}</span>
+                <span className="highscore-time">{score.timestamp}</span>
             </div>
         );
     };
+
+    function getNameById(listA: IScore[], listB: IUser[], id: number): string | undefined {
+        const itemA = listA.find(item => item.id === id);
+
+        if (itemA) {
+            const itemB = listB.find(item => item.id === itemA.fK_User);
+            return itemB ? itemB.username : undefined;
+        }
+
+        return undefined;
+    }
 
     return (
         <div className="container">
@@ -216,11 +227,13 @@ function GamePage() {
             <div className="highscore">
                 <div className="highscore-title">Highscore:</div>
                 <ul className="highscore-list">
-                   {/* {currentScores.map((entry, index) => (
+                    
+                   {currentScores.map((entry, index) => (
                         <li key={index}>
-                            {formatHighscoreEntry(entry.username, entry.points, entry.time.toString())}
+                            {formatHighscoreEntry(entry)}
                         </li>
-                    ))}*/}
+                    ))}
+                    
                 </ul>
             </div>
             <img src={cookieImage} alt="Cookie" className="cookie-image" />

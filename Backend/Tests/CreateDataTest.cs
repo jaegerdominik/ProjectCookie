@@ -57,7 +57,7 @@ public class CreateDataTest : BaseUnitTest
         {
             ID = -999,
             Points = 10,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = "01:20,00",
             FK_User = -999,
         };
 
@@ -65,7 +65,7 @@ public class CreateDataTest : BaseUnitTest
         {
             ID = -998,
             Points = 20,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = "02:20,00",
             FK_User = -999,
         };
 
@@ -73,7 +73,7 @@ public class CreateDataTest : BaseUnitTest
         {
             ID = -997,
             Points = 50,
-            Timestamp = DateTime.UtcNow,
+            Timestamp = "00:30,00",
             FK_User = -998,
         };
 

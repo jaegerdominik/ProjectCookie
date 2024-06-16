@@ -7,7 +7,7 @@ namespace ProjectCookie.DAL.Entities;
 public class Score : Entity
 {
     public int Points { get; set; }
-    public DateTime Timestamp { get; set; }
+    public string Timestamp { get; set; }
     
     [ForeignKey("FK_User")]
     [JsonProperty(Required = Required.Default)]
