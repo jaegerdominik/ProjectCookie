@@ -1,0 +1,182 @@
+﻿/* GamePage.css */
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    z-index: 1; /* Sicherstellen, dass Container im Vordergrund liegt */
+}
+
+.info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.username {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.score {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.time {
+    font-size: 1.2em;
+}
+
+.highscore {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.2em;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.7); /* Schwarzer Hintergrund */
+    padding: 10px;
+    border-radius: 10px;
+    width: 400px; /* Breitere Highscore-Anzeige */
+}
+
+.highscore-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.highscore-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.highscore-list li {
+    margin-bottom: 5px;
+}
+
+.highscore-entry {
+    display: flex;
+    justify-content: space-between;
+}
+
+.highscore-username {
+    text-align: left;
+}
+
+.highscore-dots {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.highscore-time {
+    text-align: right;
+}
+
+.cookie-image {
+    max-width: 300px;
+    border-radius: 10px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Sicherstellen, dass das Cookie-Bild im Vordergrund ist */
+}
+
+.figure {
+    position: absolute;
+    max-width: 50px;
+    z-index: 1; /* Sicherstellen, dass Figuren hinter dem Cookie sind */
+    cursor: pointer; /* Macht die Figuren klickbar */
+}
+
+@keyframes moveToCookie {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        /* Leerer Block, da die Animation im Inline-Stil definiert wird */
+    }
+}
+
+.healthbar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.health-info {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px; /* Abstand zur HealthBar */
+    color: #333;
+}
+
+.healthbar-container {
+    display: flex;
+}
+
+.healthbar-life {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    background-color: #6aff00; /* Standardfarbe: Grün */
+    border-radius: 50%;
+}
+
+.healthbar-life.active {
+    background-color: #6aff00; /* Lebenspunkt: Grün */
+}
+
+.healthbar-life.lost {
+    background-color: red; /* Verlorener Lebenspunkt: Rot */
+}
+
+.game-over-container {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 100;
+}
+
+.game-over {
+    font-size: 1.5em;
+    color: red;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.restart-button, .menu-button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.restart-button:hover, .menu-button:hover {
+    background-color: #0056b3;
+}

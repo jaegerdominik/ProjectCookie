@@ -1,12 +1,13 @@
 ﻿import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import './App.css';
+import { useLocation, useNavigate } from 'react-router-dom';
+import './GamePage.css'; // Import der neuen CSS-Datei
 import cookieImage from './images/cookie.svg';
 import figureImage from './images/figure.png';
 import HealthBar from './HealthBar';
 
 function GamePage() {
     const location = useLocation();
+    const navigate = useNavigate();
     const { username } = location.state || { username: 'Guest' };
 
     const [figures, setFigures] = useState([]);
@@ -15,6 +16,10 @@ function GamePage() {
     const [time, setTime] = useState(0); // Zeit-Tracker in Millisekunden
     const [isGameOver, setIsGameOver] = useState(false);
     const [isGameStarted, setIsGameStarted] = useState(false);
+    const [highscores, setHighscores] = useState([
+        { username: 'FirstUsername', score: 124, time: '00:03,00' },
+        { username: 'SecondUsername', score: 14, time: '01:03,00' },
+    ]); // Beispiel-Highscores
     const spawnInterval = useRef(2000); // Start-Intervall: 2000ms
     const intervalId = useRef(null);
     const timerId = useRef(null);
@@ -120,6 +125,30 @@ function GamePage() {
     const handleStart = () => {
         setIsGameStarted(true);
         handleRestart();
+
+        // Entfernen Sie alle fallenden Cookies
+        const fallingCookies = document.querySelectorAll('.falling-cookie');
+        fallingCookies.forEach(cookie => cookie.remove());
+    };
+
+    const handleBackToMenu = () => {
+        navigate('/');
+    };
+
+    const formatHighscoreEntry = (username, score, time) => {
+        const maxLength = 50; // Maximale Länge der Punkte-Linie
+        const scoreStr = String(score);
+        const timeStr = `${time} (${scoreStr})`;
+        const dotsLength = maxLength - username.length - timeStr.length;
+        const dots = '.'.repeat(dotsLength > 0 ? dotsLength : 0);
+
+        return (
+            <div className="highscore-entry">
+                <span className="highscore-username">{username}</span>
+                <span className="highscore-dots">{dots}</span>
+                <span className="highscore-time">{timeStr}</span>
+            </div>
+        );
     };
 
     return (
@@ -128,6 +157,16 @@ function GamePage() {
                 <div className="username">Hello, {username}</div>
                 <div className="score">Score: {score}</div>
                 <div className="time">Zeit: {formatTime(time)}</div> {/* Anzeige der Zeit */}
+            </div>
+            <div className="highscore">
+                <div className="highscore-title">Highscore:</div>
+                <ul className="highscore-list">
+                    {highscores.map((entry, index) => (
+                        <li key={index}>
+                            {formatHighscoreEntry(entry.username, entry.score, entry.time)}
+                        </li>
+                    ))}
+                </ul>
             </div>
             <img src={cookieImage} alt="Cookie" className="cookie-image" />
             {!isGameOver && figures.map((figure) => {
@@ -165,6 +204,7 @@ function GamePage() {
                         <>
                             <div className="game-over">Game Over</div>
                             <button className="restart-button" onClick={handleRestart}>Restart</button>
+                            <button className="menu-button" onClick={handleBackToMenu}>Zurück zum Hauptmenü</button>
                         </>
                     )}
                 </div>
