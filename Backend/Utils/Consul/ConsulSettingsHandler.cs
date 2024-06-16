@@ -41,7 +41,7 @@ public class ConsulSettingsHandler : ISettingsHandler
     /*
     |** CookieData/Database:
 {
-"DatabaseName": "johann",
+"DatabaseName": "cookie",
 "Port": "5433",
 "Password": "pass",
 "Username": "admin",

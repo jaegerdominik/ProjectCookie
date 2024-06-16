@@ -16,5 +16,12 @@ public class CookieController : ControllerBase
     {
         _globalService = globalService;
     }
+    
+    
+    [HttpGet]
+    public async Task<List<Score>> GetAll()
+    {
+        return await _globalService.ScoreService.Get();
+    }
 }
 

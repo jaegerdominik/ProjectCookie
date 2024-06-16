@@ -17,12 +17,12 @@ public class PostgresDbContext : DbContext
 
     public PostgresDbContext(DbContextOptions<PostgresDbContext> options) : base(options)
     {
-        //jdbc:postgresql://localhost:5433/johann?password=pass&user=admin
+        //jdbc:postgresql://localhost:5433/cookie?password=pass&user=admin
         _server = "127.0.0.1";
         _username = "admin";
         _password = "pass";
         _port = "5433";
-        _database = "johann";
+        _database = "cookie";
     }
     
 
@@ -33,8 +33,17 @@ public class PostgresDbContext : DbContext
             Log.Logger.Information("Creating Connection String for Host {Host}", _server);
         }
         
-        string con = "User ID=" + _username + ";Password=" + _password + ";Host=" + _server + ";Port=" + _port + ";Database=" + _database + ";CommandTimeout=120";
-        optionsBuilder.UseNpgsql(con, b => b.CommandTimeout(120)).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        string con = 
+            "User ID=" + _username
+            + ";Password=" + _password
+            + ";Host=" + _server
+            + ";Port=" + _port
+            + ";Database=" + _database
+            + ";CommandTimeout=120";
+        
+        optionsBuilder
+            .UseNpgsql(con, b => b.CommandTimeout(120))
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

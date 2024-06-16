@@ -48,7 +48,7 @@ services:
     environment:
       POSTGRES_USER: admin # Benutzername für die Datenbank
       POSTGRES_PASSWORD: pass # Passwort für den Benutzer
-      POSTGRES_DB: johann # Datenbankname
+      POSTGRES_DB: cookie # Datenbankname
     ports:
       - "5433:5432" # Portweiterleitung für die Datenbank (Host:Container)
     volumes:

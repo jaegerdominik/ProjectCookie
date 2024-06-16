@@ -5,16 +5,16 @@ namespace ProjectCookie.DAL.UnitOfWork;
 
 public class UnitOfWork : IUnitOfWork
 {
-    public PostgresDbContext Context;
+    private readonly PostgresDbContext _context;
 
     public UnitOfWork(PostgresDbContext context)
     {
-        Context = context;
+        _context = context;
     }
 
 
-    public IUserRepository Users => new UserRepository(Context);
-    public IScoreRepository Scores => new ScoreRepository(Context);
+    public IUserRepository Users => new UserRepository(_context);
+    public IScoreRepository Scores => new ScoreRepository(_context);
 
-    public async Task<int> SaveChangesAsync() => await Context.SaveChangesAsync();
+    public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
 }
