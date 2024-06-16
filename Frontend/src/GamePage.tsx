@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import './GamePage.css'; // Import der neuen CSS-Datei
+import './GamePage.css';
 import cookieImage from './images/cookie.svg';
 import figureImage from './images/figure.png';
 import HealthBar from './HealthBar';
