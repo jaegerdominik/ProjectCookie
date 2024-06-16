@@ -8,7 +8,12 @@ namespace ProjectCookie.Services.MQTT;
 public class MqttDriver : Driver
 {
     public IManagedMqttClient MqttClient { get; private set; }
+    public ManagedMqttClientOptions MqttClientOptions { get; private set; }
+    public List<string> Messages { get; private set; }
     public bool IsSubscribed { get; private set; }
+
+    private readonly string _host = "dmt.fh-joanneum.at";
+    private readonly int _port = 1883;
 
     private MqttConnectSub _connectSub;
     private MqttSubscribeSub _subscribeSub;
@@ -17,54 +22,99 @@ public class MqttDriver : Driver
 
     public MqttDriver(ICookieLogger logger, string driverName = "MQTT") : base(logger, driverName)
     {
-        MqttClientOptions options =
-            new MqttClientOptionsBuilder()
-                .WithClientId("mqttManagedClient")
-                // TODO .WithTcpServer(MqttDevice.Host)
-                .Build();
-
-        MqttClient = new MqttFactory().CreateManagedMqttClient();
-        MqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
-            .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-            .WithClientOptions(options)
-            .Build());
-        
         _connectSub = new MqttConnectSub(this);
         _subscribeSub = new MqttSubscribeSub(this);
         _publishSub = new MqttPublishSub(this);
+        
+        Messages = new List<string>();
+        
+        MqttClient = new MqttFactory().CreateManagedMqttClient();
+        Random rng = new Random();
+        MqttClientOptions = new ManagedMqttClientOptionsBuilder()
+            .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+            .WithClientOptions(new MqttClientOptionsBuilder()
+                .WithClientId($"adswe_managedClientId_{rng.Next(10000, 100000)}")
+                .WithTcpServer(_host, _port)
+                .WithCredentials(Secret.MqttUsername, Secret.MqttUsername)
+                .WithCleanSession()
+                .Build())
+            .Build();
+
+        MqttClient.ConnectedAsync += async e =>
+        {
+            log.Information("Connected to MQTT server. Subscribing...");
+            await InitialSubscribe();
+        };
+
+        MqttClient.DisconnectedAsync += e =>
+        {
+            log.Warning("Disconnected from MQTT server.");
+            return Task.CompletedTask;
+        };
+
+        MqttClient.ApplicationMessageReceivedAsync += e =>
+        {
+            _publishSub.HandleReceivedMessage(e);
+            return Task.CompletedTask;
+        };
     }
 
 
-    public async override Task Connect()
+    #region Connect
+
+    public async Task Connect()
     {
-        await _connectSub.Connect();
+        if (IsConnected) return;
+        
+        await _connectSub.StartAsync();
         IsConnected = MqttClient.IsConnected;
-        log.Information("The MQTT client is connected.");
+        log.Information($"The MQTT client is connected: {IsConnected}");
     }
-    public async override Task Disconnect()
+
+    public async Task Disconnect()
     {
-        await _connectSub.Disconnect();
+        if (!IsConnected) return;
+
+        await _connectSub.StopAsync();
         IsConnected = MqttClient.IsConnected;
-        log.Information("The MQTT client is disconnected.");
-    }
-
-    public async Task Subscribe(string topic)
-    {
-        await _subscribeSub.SubscribeTopic(topic);
-        IsSubscribed = true;
-        log.Information($"MQTT client subscribed to topic: {topic}");
-    }
-
-    public async Task Unsubscribe(string topic)
-    {
-        await _subscribeSub.UnsubscribeTopic(topic);
         IsSubscribed = false;
-        log.Information($"MQTT client unsubscribed to topic: {topic}");
+        log.Information($"The MQTT client is disconnected: {!IsConnected}");
     }
+
+    #endregion
+    
+    #region Subscribe
+
+    private Task InitialSubscribe()
+    {
+        _subscribeSub.SubscribeToDefaultTopics();
+        IsSubscribed = true;
+        return Task.CompletedTask;
+    }
+
+    public void Subscribe(string topic)
+    {
+        _subscribeSub.SubscribeToTopic(topic);
+        IsSubscribed = true;
+        log.Information($"Subscribed to topic {topic}");
+    }
+
+    public Task Unsubscribe(string topic)
+    {
+        _subscribeSub.UnsubscribeFromTopic(topic);
+        log.Information($"Unsubscribed from topic {topic}");
+        return Task.CompletedTask;
+    }
+    
+    #endregion
+
+    #region Publish
 
     public async Task Publish(string topic, byte[] payload)
     {
         await _publishSub.PublishPayload(topic, payload);
         log.Information($"MQTT client published payload: {payload} to topic: {topic}");
     }
+
+    #endregion
 }

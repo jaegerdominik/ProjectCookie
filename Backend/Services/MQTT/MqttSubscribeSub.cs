@@ -1,5 +1,4 @@
-﻿using MQTTnet;
-using MQTTnet.Client;
+﻿using MQTTnet.Extensions.ManagedClient;
 
 namespace ProjectCookie.Services.MQTT;
 
@@ -9,37 +8,19 @@ public class MqttSubscribeSub
     public MqttSubscribeSub(MqttDriver driver) => _driver = driver;
 
 
-    public async Task SubscribeTopic(string topic)
+    public void SubscribeToDefaultTopics()
     {
-        await _driver.MqttClient.SubscribeAsync([
-            new MqttTopicFilterBuilder()
-                .WithTopic(topic)
-                .Build()
-        ]);
-
-        _driver.MqttClient.ApplicationMessageReceivedAsync += HandleReceivedMessage;
+        List<string> topics = ["adswe_mqtt_cookie_message"];
+        topics.ForEach(SubscribeToTopic);
     }
-
-    public async Task UnsubscribeTopic(string topic)
+    
+    public async void SubscribeToTopic(string topic)
     {
-        await _driver.MqttClient.UnsubscribeAsync([topic]);
-
-        _driver.MqttClient.ApplicationMessageReceivedAsync -= HandleReceivedMessage;
+        await _driver.MqttClient.SubscribeAsync(topic);
     }
-
-
-    private Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
+    
+    public async void UnsubscribeFromTopic(string topic)
     {
-        //TODO
-        /** string topic = eventArgs.ApplicationMessage.Topic;
-         DataPoint dataPoint = _driver.MqttDataPoints.First(dp => dp.TopicName == topic);
-
-         ReadOnlySpan<byte> messageData = eventArgs.ApplicationMessage.PayloadSegment;
-         NumericSample sample = JsonSerializer.Deserialize<NumericSample>(messageData);
-
-         _driver.AddNumericMeasurement(dataPoint.Name, sample);
-         **/
-
-        return Task.CompletedTask;
+        await _driver.MqttClient.UnsubscribeAsync(topic);
     }
 }
