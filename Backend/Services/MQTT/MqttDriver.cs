@@ -1,7 +1,7 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
 using ProjectCookie.Utils.Logging;
+using Serilog;
 
 namespace ProjectCookie.Services.MQTT;
 
@@ -66,13 +66,15 @@ public class MqttDriver : Driver, IHostedService
         using (IServiceScope scope = _scopeFactory.CreateScope())
         {
             ICookieLogger logger = scope.ServiceProvider.GetRequiredService<ICookieLogger>();
-            logger.ContextLog<MqttDriver>("MqttDriver started");
+            logger.ContextLog<MqttDriver>();
+            Log.Logger.Information("MqttDriver started");
             
             if (IsConnected) return;
             
             await _connectSub.StartAsync(token);
             IsConnected = MqttClient.IsConnected;
             logger.ContextLog<MqttDriver>($"The MQTT client is connected: {IsConnected}");
+            Log.Logger.Information($"The MQTT client is connected: {IsConnected}");
         }
     }
 

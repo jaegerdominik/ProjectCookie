@@ -6,10 +6,16 @@ namespace ProjectCookie.Tests;
 [TestFixture, Order(5)]
 public class MqttTest : BaseUnitTest
 {
+    protected override void _CollectServices()
+    {
+        base._CollectServices();
+        _services.AddSingleton<MqttDriver>();
+    }
+
     private MqttDriver _testDriver;
     private string _testTopic;
     private string _testMessage;
-
+    
     [Test]
     public async Task SubscribeAndPublishTest()
     {
@@ -25,7 +31,7 @@ public class MqttTest : BaseUnitTest
 
     private async Task PrepareTestData()
     {
-        _testDriver = null; // new MqttDriver();
+        _testDriver =  _serviceProvider.GetRequiredService<MqttDriver>();
         _testTopic = "adswe_mqtt_cookie_message";
         _testMessage = "Test MQTT 4 ADSWE";
     }
