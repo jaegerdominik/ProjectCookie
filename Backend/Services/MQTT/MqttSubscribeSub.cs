@@ -10,7 +10,7 @@ public class MqttSubscribeSub
 
     public void SubscribeToDefaultTopics()
     {
-        List<string> topics = ["adswe_mqtt_cookie_message"];
+        List<string> topics = ["adswe_mqtt_cookie_message", "adswe_mqtt_cookie_user", "adswe_mqtt_cookie_score"];
         topics.ForEach(SubscribeToTopic);
     }
     

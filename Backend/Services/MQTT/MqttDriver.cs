@@ -1,5 +1,9 @@
-﻿using MQTTnet;
+﻿using System.Text;
+using MQTTnet;
 using MQTTnet.Client;
+using ProjectCookie.DAL.Entities;
+using ProjectCookie.Services.BaseInterfaces;
+using ProjectCookie.Services.Response;
 using ProjectCookie.Utils.Logging;
 using Serilog;
 
@@ -10,7 +14,7 @@ public class MqttDriver : Driver, IHostedService
     private IServiceScopeFactory _scopeFactory;
     public IMqttClient MqttClient { get; private set; }
     public MqttClientOptions MqttClientOptions { get; private set; }
-    public List<string> Messages { get; private set; }
+    public List<string> TestMessages { get; private set; }
 
     private readonly string _host = "dmt.fh-joanneum.at";
     private readonly int _port = 1883;
@@ -28,7 +32,7 @@ public class MqttDriver : Driver, IHostedService
         _subscribeSub = new MqttSubscribeSub(this);
         _publishSub = new MqttPublishSub(this);
         
-        Messages = new List<string>();
+        TestMessages = new List<string>();
         
         Random rng = new Random();
         string clientId = $"adswe_client_id_{rng.Next(10000, 100000)}";
@@ -53,7 +57,7 @@ public class MqttDriver : Driver, IHostedService
 
         MqttClient.ApplicationMessageReceivedAsync += e =>
         {
-            _publishSub.HandleReceivedMessage(e);
+            HandleReceivedMessage(e);
             return Task.CompletedTask;
         };
     }
@@ -127,4 +131,73 @@ public class MqttDriver : Driver, IHostedService
     }
 
     #endregion
+    
+    public async Task HandleReceivedMessage(MqttApplicationMessageReceivedEventArgs eventArgs)
+    {
+        string topic = eventArgs.ApplicationMessage.Topic;
+        
+        switch (topic)
+        {
+            case "adswe_mqtt_cookie_test":
+                ArraySegment<byte> testData = eventArgs.ApplicationMessage.PayloadSegment;
+                string testMessage = Encoding.UTF8.GetString(testData);
+                
+                TestMessages.Add(testMessage);
+                break;
+            
+            case "adswe_mqtt_cookie_score":
+                ArraySegment<byte> scoreData = eventArgs.ApplicationMessage.PayloadSegment;
+                string scoreMessage = Encoding.UTF8.GetString(scoreData);
+
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
+
+                    string msg = scoreMessage; //"10|01:20,00|carlos";
+                    
+                    string[] fields = msg.Split('|');
+                    string username = fields[3];
+
+                    int userId;
+                    
+                    User? user = await globalService.UserService.GetByName(username);
+                    if (user == null)
+                    {
+                        User newUser = new User() { Username = username };
+                        ItemResponseModel<User> createdUser = await globalService.UserService.Create(newUser);
+                        userId = createdUser.Data.ID;
+                    }
+                    else
+                    {
+                        userId = user.ID;
+                    }
+
+                    Score mappedScore = new Score()
+                    {
+                        Points = int.Parse(fields[0]),
+                        Timestamp = fields[1],
+                        FK_User = userId
+                    };
+                    
+                    await globalService.ScoreService.Create(mappedScore);
+                }
+                
+                break;
+            
+            case "adswe_mqtt_cookie_user":
+                ArraySegment<byte> userData = eventArgs.ApplicationMessage.PayloadSegment;
+                string userMessage = Encoding.UTF8.GetString(userData);
+                
+                User newUser2 = new User() { Username = userMessage }; // "carlos"
+
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
+                    await globalService.UserService.Create(newUser2);
+                }
+                
+                break;
+
+        }
+    }
 }

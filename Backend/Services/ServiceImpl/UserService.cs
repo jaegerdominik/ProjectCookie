@@ -7,7 +7,6 @@ public class UserService : Service<User>
 {
     public UserService(IUserRepository repo) : base(repo) { }
 
-    
     public override async Task<bool> Validate(User entity)
     {
         if (entity != null)
@@ -23,5 +22,11 @@ public class UserService : Service<User>
         }
 
         return ValidationDictionary.IsValid;
+    }
+
+    public async Task<User?> GetByName(string username)
+    {
+        User? user = await Repo.FindAsync((u) => u.Username == username);
+        return user;
     }
 }

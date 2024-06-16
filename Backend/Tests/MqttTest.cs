@@ -57,7 +57,7 @@ public class MqttTest : BaseUnitTest
     {
         await Task.Delay(delay);
         
-        string publishedMessage = _testDriver.Messages.First(msg => msg == _testMessage);
+        string publishedMessage = _testDriver.TestMessages.First(msg => msg == _testMessage);
         Assert.That(publishedMessage, Is.EqualTo(_testMessage));
     }
     
