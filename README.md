@@ -10,14 +10,6 @@
     npm install
     ```
 
-### Backend
-
-1. Navigate to the Backend directory and install dependencies:
-    ```bash
-    cd ../Backend
-    npm install
-    ```
-
 ### Secrets
 
 1. Add necessary secrets. In order to do that, copy the zipped folder from the email into Backend/DAL the folder structure should look like this:
@@ -30,11 +22,11 @@
     │   ├── ...
     ```
   
-### Docker
+### Backend & Docker
 
 1. Start the docker container:
     ```bash
-    cd ./.docker
+    cd ../Backend/.docker
     docker-compose up
     ```
 
