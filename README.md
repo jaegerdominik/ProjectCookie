@@ -29,6 +29,7 @@
     cd ../Backend/.docker
     docker-compose up
     ```
+2. If the cookie-timescaledb fails to start, copy the contents of the 'zzz-after-up-patch' folder into the .docker folder. This should insert som missing folders.
 
 ### Consul Setup
 
@@ -88,7 +89,7 @@
 
 ### Database Setup
 
-1. For safety, restart the container.
+1. Optionally, for safety, restart the container.
 2. Update the database:
     ```bash
     dotnet ef database update --context PostgresDbContext
@@ -133,6 +134,7 @@
 ### Testing
 
 1. Execute `CreateDataTest`.
+2. Optionally, you can run all other tests as well
 
 ### Accessing the Application
 

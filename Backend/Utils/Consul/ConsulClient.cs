@@ -6,28 +6,19 @@ namespace ProjectCookie.Utils.Consul;
 
 public class ConsulClient : IDisposable
 {
-
     global::Consul.ConsulClient Client;
-    public ConsulClient()
-    {
-
-    }
+    public ConsulClient() { }
 
     public async Task<Boolean> Connect()
     {
-
-        String curl = Environment.GetEnvironmentVariable("CONFIG_SERVER");
-
-        if (String.IsNullOrEmpty(curl))
-        {
-            curl = "http://127.0.0.1:8500";
-        }
+        string curl = Environment.GetEnvironmentVariable("CONFIG_SERVER");
+        if (string.IsNullOrEmpty(curl)) curl = "http://127.0.0.1:8500";
 
         Console.WriteLine("Connecting to " + curl);
 
         try
         {
-            ConsulClientConfiguration config = new ConsulClientConfiguration();
+            ConsulClientConfiguration config = new();
             config.Address = new Uri(curl);
             config.WaitTime = TimeSpan.FromSeconds(15); ;
 
@@ -40,7 +31,6 @@ public class ConsulClient : IDisposable
             Console.WriteLine(myEx);
             Client = null;
             return false;
-
         }
     }
 
@@ -52,49 +42,27 @@ public class ConsulClient : IDisposable
         }
     }
 
-    public async Task<String> GetKey(string key)
+    public async Task<string?> GetKey(string key)
     {
-        if (Client != null)
-        {
-            var getPair = await Client.KV.Get(key);
+        if (Client == null) return null;
+        
+        QueryResult<KVPair>? getPair = await Client.KV.Get(key);
+        if (getPair?.Response == null) return null;
 
-
-            if (getPair?.Response == null)
-            {
-                return null;
-            }
-
-            String value = Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length);
-            return value;
-        }
-
-        return null;
+        string value = Encoding.UTF8.GetString(getPair.Response.Value, 0, getPair.Response.Value.Length);
+        return value;
     }
 
-    public async Task<Boolean> SetKey(string key, String input)
+    public async Task<bool> SetKey(string key, string input)
     {
+        if (Client == null) return false;
+        
+        byte[] byteArray = Encoding.UTF8.GetBytes(input);
+        KVPair pair = new(key);
+        pair.Key = key;
+        pair.Value = byteArray;
 
-        if (Client != null)
-        {
-            KVPair pair = new KVPair(key);
-            pair.Key = key;
-            byte[] byteArray = Encoding.UTF8.GetBytes(input);
-            // byte[] data = Encoding.UTF8.GetBytes(value) ;
-
-            pair.Value = byteArray;
-
-            WriteResult<bool> response = await Client.KV.Put(pair);
-
-            if (response == null || response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                return false;
-            }
-
-            return true;
-
-        }
-
-        return false;
+        WriteResult<bool> response = await Client.KV.Put(pair);
+        return response is { StatusCode: System.Net.HttpStatusCode.OK };
     }
-
 }

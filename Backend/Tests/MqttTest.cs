@@ -3,7 +3,7 @@ using ProjectCookie.Services.MQTT;
 
 namespace ProjectCookie.Tests;
 
-[TestFixture, Order(5)]
+[TestFixture, Order(6)]
 public class MqttTest : BaseUnitTest
 {
     protected override void _CollectServices()
@@ -32,7 +32,7 @@ public class MqttTest : BaseUnitTest
     private async Task PrepareTestData()
     {
         _testDriver =  _serviceProvider.GetRequiredService<MqttDriver>();
-        _testTopic = "adswe_mqtt_cookie_message";
+        _testTopic = "adswe_mqtt_cookie_test";
         _testMessage = "Test MQTT 4 ADSWE";
     }
 

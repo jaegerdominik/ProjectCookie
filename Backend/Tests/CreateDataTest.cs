@@ -3,17 +3,15 @@ using ProjectCookie.DAL.Entities;
 
 namespace ProjectCookie.Tests;
 
-[TestFixture]
-[Order(1)]
+[TestFixture, Order(1)]
 public class CreateDataTest : BaseUnitTest
 {
     [Test (ExpectedResult = true)]
-    [Order(1)]
     public async Task<bool> CreateTestScoresAndUsers()
     {
         try
         {
-            User existingTestUser = await UnitOfWork.Users.FindByIdAsync(-999);
+            User? existingTestUser = await UnitOfWork.Users.FindByIdAsync(-999);
             if (existingTestUser != null) return true;
             
             foreach (User user in _GetUsers())   

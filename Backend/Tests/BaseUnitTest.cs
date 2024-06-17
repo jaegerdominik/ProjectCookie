@@ -39,9 +39,10 @@ public class BaseUnitTest
     }
 
     [TearDown]
-    public virtual async Task TearDown()
+    public virtual Task TearDown()
     {
         _serviceProvider.Dispose();
+        return Task.CompletedTask;
     }
 
 
@@ -61,8 +62,9 @@ public class BaseUnitTest
 
         
     [Test]
-    public async Task TestSetup()   
+    public Task TestSetup()
     {
         Assert.That(_services.Count, Is.GreaterThan(0));
+        return Task.CompletedTask;
     }
 }

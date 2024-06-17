@@ -2,5 +2,5 @@ using NUnit.Framework;
 
 namespace ProjectCookie.Tests;
 
-[TestFixture, Order(4)]
+[TestFixture, Order(5)]
 public class ScoreServiceTest : BaseUnitTest;

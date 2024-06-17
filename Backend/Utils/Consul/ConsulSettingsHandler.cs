@@ -6,33 +6,34 @@ namespace ProjectCookie.Utils.Consul;
 
 public class ConsulSettingsHandler : ISettingsHandler
 {
-    ISettings Settings { get; set; }
+    public ISettings Settings { get; set; }
+    
     public ConsulSettingsHandler(ISettings settings)
     {
         Settings = settings;
     }
+    
     public async Task Load()
     {
-        using (ConsulClient cli = new ConsulClient())
-        {
-            bool conn = await cli.Connect();
+        using ConsulClient cli = new();
+        bool conn = await cli.Connect();
 
-            if (conn)
+        if (conn)
+        {
+            try
             {
-                try
-                {
-                    string logger = await cli.GetKey("CookieData/Logger");
-                    string db = await cli.GetKey("CookieData/Database");
-                    TimeScaleDBSettings dbSettings = JsonConvert.DeserializeObject<TimeScaleDBSettings>(db);
-                    
-                    Settings.LoggerSettings = logger;
-                    Settings.TimeScaleDBSettings = dbSettings;
-                }
-                catch (Exception ex)
-                {
-                    WarningException myEx = new WarningException("Error during reading configuration", ex);
-                    Console.WriteLine(myEx);
-                }
+                string logger = await cli.GetKey("CookieData/Logger") ?? throw new InvalidOperationException();
+                string db = await cli.GetKey("CookieData/Database") ?? throw new InvalidOperationException();
+                TimeScaleDBSettings dbSettings = JsonConvert.DeserializeObject<TimeScaleDBSettings>(db) 
+                                                 ?? throw new InvalidOperationException();
+
+                Settings.LoggerSettings = logger;
+                Settings.TimeScaleDBSettings = dbSettings;
+            }
+            catch (Exception ex)
+            {
+                WarningException myEx = new("Error during reading configuration", ex);
+                Console.WriteLine(myEx);
             }
         }
     }

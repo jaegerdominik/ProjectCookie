@@ -4,7 +4,6 @@ using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.Services.BaseInterfaces;
 using ProjectCookie.Services.Response;
 using ProjectCookie.Utils;
-using ProjectCookie.Utils.Logging;
 using Serilog;
 
 namespace ProjectCookie.Services;
@@ -26,9 +25,9 @@ public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entit
     
     public async Task<ItemResponseModel<TEntity>> Create(TEntity entry)
     {
-        Log.Information("INSIDE CREATE with param: " + entry);
+        Log.Information("Create new entry: " + entry);
         bool validated = await Validate(entry);
-        ItemResponseModel<TEntity> response = new ItemResponseModel<TEntity>();
+        ItemResponseModel<TEntity> response = new();
         
         if (validated)
         {
@@ -45,59 +44,12 @@ public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entit
 
         return response;
     }
-
-    public async Task<ItemResponseModel<TEntity>> Update(int id, TEntity entry)
-    {
-         bool validated = await Validate(entry);
-         ItemResponseModel<TEntity> response = new ItemResponseModel<TEntity>();
-
-         if (validated)
-         {
-             await Repo.UpdateAsync(entry);
-             response.Data = entry;
-             response.HasError = false;
-         }
-         else
-         {
-             response.Data = default(TEntity);
-             response.HasError = true;
-             response.ErrorMessages = ValidationDictionary.Errors;
-         }
-        
-         return null;
-    }
-
-    public async Task<ActionResultResponseModel> Delete(int id)
-    {
-        ActionResultResponseModel model = new ActionResultResponseModel();
-        model.Success = true;
-
-        try
-        {
-            await Repo.DeleteByIdAsync(id);
-        }
-        catch (Exception e)
-        {
-            model.Success = false;
-            Console.WriteLine(e);
-        }
-        
-        return null;
-    }
-
+    public async Task<List<TEntity>> Get() => Repo.FilterBy(e => e != null).ToList();
+    public async Task<TEntity?> Get(int id) => await Repo.FindByIdAsync(id);
+    
     public async Task SetModelState(ModelStateDictionary validation)
     {
         ValidationDictionary = new ModelStateWrapper(validation);
         ModelStateDictionary = validation;
-    }
-
-    public async Task<TEntity> Get(int id)
-    {
-        return await Repo.FindByIdAsync(id);
-    }
-
-    public async Task<List<TEntity>> Get()
-    {
-        return await Task.FromResult(Repo.FilterBy(doc => doc != null).ToList());
     }
 }

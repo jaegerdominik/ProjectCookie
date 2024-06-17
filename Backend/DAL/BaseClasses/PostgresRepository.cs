@@ -34,22 +34,5 @@ namespace ProjectCookie.DAL.BaseClasses
             await _dbSet.AddAsync(entity);
             await _db.SaveChangesAsync();
         }
-
-        public async Task UpdateAsync(TEntity entity)
-        {
-            _dbSet.Update(entity);
-            await _db.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Expression<Func<TEntity, bool>> filterExpression)
-        {
-            TEntity? entityToRemove = await FindAsync(filterExpression);
-            if (entityToRemove == null) return;
-
-            _dbSet.Remove(entityToRemove);
-            await _db.SaveChangesAsync();
-        }
-        public async Task DeleteByIdAsync(int id)
-            => await DeleteAsync(e => e.ID == id);
     }
 }

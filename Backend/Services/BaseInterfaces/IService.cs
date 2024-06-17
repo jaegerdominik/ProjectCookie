@@ -7,10 +7,8 @@ namespace ProjectCookie.Services.BaseInterfaces;
 public interface IService<TEntity> where TEntity : Entity
 {
     public abstract Task<ItemResponseModel<TEntity>> Create(TEntity entry);
-    public abstract Task<ItemResponseModel<TEntity>> Update(int id, TEntity entry);
+    public abstract Task<TEntity?> Get(int id);
+    public abstract Task<List<TEntity>> Get();
     
-    public Task<ActionResultResponseModel> Delete(int id);
     public Task SetModelState(ModelStateDictionary validation);
-    public Task<TEntity> Get(int id);
-    public Task<List<TEntity>> Get();
 }
