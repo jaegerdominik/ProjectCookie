@@ -1,3 +1,4 @@
+using ProjectCookie.DAL.BaseClasses;
 using ProjectCookie.DAL.BaseInterfaces;
 using ProjectCookie.DAL.Entities;
 using ProjectCookie.DAL.UnitOfWork;

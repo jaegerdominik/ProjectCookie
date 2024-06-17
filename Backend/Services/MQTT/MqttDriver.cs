@@ -12,12 +12,10 @@ namespace ProjectCookie.Services.MQTT;
 public class MqttDriver : Driver, IHostedService
 {
     private IServiceScopeFactory _scopeFactory;
+    
     public IMqttClient MqttClient { get; private set; }
     public MqttClientOptions MqttClientOptions { get; private set; }
     public List<string> TestMessages { get; private set; }
-
-    private readonly string _host = "dmt.fh-joanneum.at";
-    private readonly int _port = 1883;
 
     private MqttConnectSub _connectSub;
     private MqttSubscribeSub _subscribeSub;
@@ -40,23 +38,26 @@ public class MqttDriver : Driver, IHostedService
         MqttClient = new MqttFactory().CreateMqttClient();
         MqttClientOptions = new MqttClientOptionsBuilder()
             .WithClientId(clientId)
-            .WithTcpServer(_host, _port)
+            .WithTcpServer(Secret.MqttHost, Secret.MqttPort)
             .WithCredentials(Secret.MqttUsername, Secret.MqttPassword)
             .WithCleanSession()
             .Build();
 
         MqttClient.ConnectedAsync += async e =>
         {
+            Log.Logger.Information("MQTT Client successfully connected.");
             await InitialSubscribe();
         };
 
         MqttClient.DisconnectedAsync += e =>
         {
+            Log.Logger.Information("MQTT Client disconnected.");
             return Task.CompletedTask;
         };
 
         MqttClient.ApplicationMessageReceivedAsync += e =>
         {
+            Log.Logger.Information("MQTT Client received a message.");
             HandleReceivedMessage(e);
             return Task.CompletedTask;
         };
@@ -148,76 +149,55 @@ public class MqttDriver : Driver, IHostedService
                 break;
             
             case "adswe_mqtt_cookie_score":
-                Log.Logger.Information("MESSAGE Received for score");
-                
+                // Example message: "10|01:20,00|carlos";
                 ArraySegment<byte> scoreData = eventArgs.ApplicationMessage.PayloadSegment;
                 string scoreMessage = Encoding.UTF8.GetString(scoreData);
 
-                using (var scope = _scopeFactory.CreateScope())
+                using (IServiceScope scope = _scopeFactory.CreateScope())
                 {
-                    var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
+                    IGlobalService globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
 
-                    string msg = scoreMessage; //"10|01:20,00|carlos";
-                    
-                    string[] fields = msg.Split('|');
+                    string[] fields = scoreMessage.Split('|');
+                    int points = int.Parse(fields[0]);
+                    string time = fields[1];
                     string username = fields[2];
-                    Log.Logger.Information($"username from split: {username}");
 
                     int userId;
 
                     User? user = await globalService.UserService.GetByName(username);
                     if (user == null)
                     {
-                        User newUser = new User() { Username = username };
-                        Log.Logger.Information($"try creating user...");
+                        User newUser = new() { Username = username };
                         ItemResponseModel<User> createdUser = await globalService.UserService.Create(newUser);
-                        Log.Logger.Information($"fail: " + createdUser.HasError);
                         userId = createdUser.Data.ID;
                     }
                     else
                     {
                         userId = user.ID;
                     }
-                    Log.Logger.Information($"userid: {userId}");
 
-                    Score mappedScore = new Score()
+                    Score mappedScore = new()
                     {
-                        Points = int.Parse(fields[0]),
-                        Timestamp = fields[1],
+                        Points = points,
+                        Timestamp = time,
                         FK_User = userId
                     };
                     
-                    Log.Logger.Information($"try creating score...");
                     await globalService.ScoreService.Create(mappedScore);
-                    Log.Logger.Information($"success..");
                 }
                 
                 break;
             
             case "adswe_mqtt_cookie_user":
-                Log.Logger.Information("MESSAGE Received for user");
-                
+                // Example message: "carlos"
                 ArraySegment<byte> userData = eventArgs.ApplicationMessage.PayloadSegment;
                 string userMessage = Encoding.UTF8.GetString(userData);
                 
-                Log.Logger.Information("user's msg: " + userMessage);
-                
-                User newUser2 = new User() { Username = userMessage }; // "carlos"
-                Log.Logger.Information("user's name: " + newUser2.Username);
-
-                using (var scope = _scopeFactory.CreateScope())
+                User newUser2 = new() { Username = userMessage }; 
+                using (IServiceScope scope = _scopeFactory.CreateScope())
                 {
-                    Log.Logger.Information("scope: " + scope.ToString());
-
-                    var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
-                    
-                    Log.Logger.Information("global: " + globalService.ToString());
-                    Log.Logger.Information("global.user: " + globalService.UserService.ToString());
-
+                    IGlobalService globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
                     ItemResponseModel<User> us = await globalService.UserService.Create(newUser2);
-                    Log.Logger.Information("DONE creating:");
-                    Log.Logger.Information("us.data: " + us.Data);
-                    Log.Logger.Information("us.haserror: " + us.HasError);
                 }
                 
                 break;

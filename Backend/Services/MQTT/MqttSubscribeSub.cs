@@ -1,4 +1,5 @@
 ﻿using MQTTnet.Client;
+using Serilog;
 
 namespace ProjectCookie.Services.MQTT;
 
@@ -21,6 +22,7 @@ public class MqttSubscribeSub
             .Build();
         
         await _driver.MqttClient.SubscribeAsync(mqttSubscribeOptions);
+        Log.Logger.Information($"MQTT Client subscribed to topic: {topic}");
     }
     
     public async void UnsubscribeFromTopic(string topic)
@@ -28,5 +30,6 @@ public class MqttSubscribeSub
         if (!_driver.IsSubscribed) return;
         
         await _driver.MqttClient.UnsubscribeAsync(topic);
+        Log.Logger.Information($"MQTT Client unsubscribed from topic: {topic}");
     }
 }
