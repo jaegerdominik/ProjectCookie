@@ -101,7 +101,7 @@ function GamePage() {
         };
     }, [isGameStarted, isGameOver, time]);
 
-    useEffect(() => {
+    const fetchScores = () => {
         fetch(`https://localhost:7031/api/cookie/scores`)
             .then(response => response.json())
             .then((fetchedScores: IScore[]) => {
@@ -112,6 +112,10 @@ function GamePage() {
                 setError("There was an error fetching the scores!");
                 console.error(error);
             });
+    };
+
+    useEffect(() => {
+        fetchScores();
     }, []);
 
     useEffect(() => {
@@ -133,7 +137,6 @@ function GamePage() {
             setAreScoresSent(true);
         }
     }, [isGameOver, areScoresSent, score, time, username]);
-
 
     if (error) return <div>{error}</div>;
     if (!currentScores.length) return <div>Loading scores...</div>;
@@ -184,6 +187,8 @@ function GamePage() {
             timerId.current = requestAnimationFrame(updateTimer);
         };
         timerId.current = requestAnimationFrame(updateTimer);
+
+        fetchScores(); // Update the scoreboard when restarting
     };
 
     const handleStart = () => {

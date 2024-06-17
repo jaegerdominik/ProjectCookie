@@ -56,8 +56,8 @@ public class CreateDataTest : BaseUnitTest
         Score testScore1 = new()
         {
             ID = -999,
-            Points = 10,
-            Timestamp = "01:20,00",
+            Points = 20,
+            Timestamp = "00:10,81",
             FK_User = -999,
         };
 
@@ -65,7 +65,7 @@ public class CreateDataTest : BaseUnitTest
         {
             ID = -998,
             Points = 20,
-            Timestamp = "02:20,00",
+            Timestamp = "00:20,23",
             FK_User = -999,
         };
 
@@ -73,7 +73,7 @@ public class CreateDataTest : BaseUnitTest
         {
             ID = -997,
             Points = 50,
-            Timestamp = "00:30,00",
+            Timestamp = "00:39,47",
             FK_User = -998,
         };
 
