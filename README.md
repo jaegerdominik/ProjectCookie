@@ -144,3 +144,10 @@
 ### Accessing the Application
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Questions
+
+If you have any questions regarding the project setup process, do not hesitate to contact the developers:
+- Martin Haring (martin.haring3@edu.fh-joanneum.at)
+- Dominik Jäger (dominik.jaeger@edu.fh-joanneum.at)
+- Raphael Klein (raphael.klein@edu.fh-joanneum.at)
