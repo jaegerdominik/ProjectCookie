@@ -39,7 +39,6 @@ function GamePage() {
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
     const [areScoresSent, setAreScoresSent] = useState<boolean>(false);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
-    const [highscores, setHighscores] = useState<Highscore[]>([]);
     const [currentScores, setCurrentScores] = useState<IScore[]>([]);
     const [currentUsers, setCurrentUsers] = useState<IUser[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -105,7 +104,10 @@ function GamePage() {
     useEffect(() => {
         fetch(`https://localhost:7031/api/cookie/scores`)
             .then(response => response.json())
-            .then((fetchedScores: IScore[]) => setCurrentScores(fetchedScores))
+            .then((fetchedScores: IScore[]) => {
+                const sortedScores = fetchedScores.sort((a, b) => b.points - a.points).slice(0, 10);
+                setCurrentScores(sortedScores);
+            })
             .catch(error => {
                 setError("There was an error fetching the scores!");
                 console.error(error);
@@ -197,17 +199,13 @@ function GamePage() {
     };
 
     const formatHighscoreEntry = (score: IScore) => {
-        const maxLength = 50;
-        const scoreStr = String(score);
-        const timeStr = `${time} (${scoreStr})`;
-        const dotsLength = maxLength - username.length - timeStr.length;
-        const dots = '.'.repeat(dotsLength > 0 ? dotsLength : 0);
-
+        const username = getNameById(currentScores, currentUsers, score.id) || 'Unknown';
+        const timeStr = `${formatTime(parseTime(score.timestamp))}`;
         return (
             <div className="highscore-entry">
-                <span className="highscore-username">{getNameById(currentScores, currentUsers, score.id)}</span>
-                <span className="highscore-dots">{score.points}</span>
-                <span className="highscore-time">{score.timestamp}</span>
+                <span className="highscore-username">{username}</span>
+                <span className="highscore-score">{score.points}</span>
+                <span className="highscore-time">{timeStr}</span>
             </div>
         );
     };
@@ -223,6 +221,11 @@ function GamePage() {
         return undefined;
     }
 
+    const parseTime = (timeStr: string): number => {
+        const [minutes, seconds, centiseconds] = timeStr.split(/[:.,]/).map(Number);
+        return (minutes * 60 * 1000) + (seconds * 1000) + (centiseconds * 10);
+    };
+
     return (
         <div className="container">
             <div className="info">
@@ -233,13 +236,11 @@ function GamePage() {
             <div className="highscore">
                 <div className="highscore-title">Highscore:</div>
                 <ul className="highscore-list">
-                    
-                   {currentScores.map((entry, index) => (
+                    {currentScores.map((entry, index) => (
                         <li key={index}>
                             {formatHighscoreEntry(entry)}
                         </li>
                     ))}
-                    
                 </ul>
             </div>
             <img src={cookieImage} alt="Cookie" className="cookie-image" />

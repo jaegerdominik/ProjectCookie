@@ -12,8 +12,8 @@ function App() {
             fetch(`https://localhost:7031/api/join/${username}`, {
                 method: "PUT"
             })
-            .catch(e => console.log(e));
-            
+                .catch(e => console.log(e));
+
             navigate('/game', { state: { username } });
         } else {
             alert('Please enter a username');
@@ -22,6 +22,13 @@ function App() {
 
     const handleCredits = () => {
         navigate('/credits');
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (!value.includes('|')) {
+            setUsername(value);
+        }
     };
 
     useEffect(() => {
@@ -54,7 +61,7 @@ function App() {
                 type="text"
                 placeholder="Enter your username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleInputChange}
                 maxLength={20} // Limitiert die Länge auf 20 Zeichen
                 className="input"
             />
