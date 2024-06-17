@@ -21,12 +21,6 @@ interface IUser {
     username: string;
 }
 
-interface Highscore {
-    username: string;
-    score: number;
-    time: string;
-}
-
 function GamePage() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -207,11 +201,11 @@ function GamePage() {
         const username = getNameById(currentScores, currentUsers, score.id) || 'Unknown';
         const timeStr = `${formatTime(parseTime(score.timestamp))}`;
         return (
-            <div className="highscore-entry">
+            <>
                 <span className="highscore-username">{username}</span>
                 <span className="highscore-score">{score.points}</span>
                 <span className="highscore-time">{timeStr}</span>
-            </div>
+            </>
         );
     };
 
@@ -241,8 +235,13 @@ function GamePage() {
             <div className="highscore">
                 <div className="highscore-title">Highscore:</div>
                 <ul className="highscore-list">
+                    <li className="highscore-entry">
+                        <span className="highscore-username">Username</span>
+                        <span className="highscore-score">Score</span>
+                        <span className="highscore-time">Time</span>
+                    </li>
                     {currentScores.map((entry, index) => (
-                        <li key={index}>
+                        <li key={index} className="highscore-entry">
                             {formatHighscoreEntry(entry)}
                         </li>
                     ))}

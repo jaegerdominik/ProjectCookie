@@ -1,5 +1,4 @@
-﻿/* GamePage.css */
-.container {
+﻿.container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -57,24 +56,25 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
-}
-
-.highscore-list li {
-    margin-bottom: 5px;
+    text-align: center; /* Zentral ausgerichtet */
 }
 
 .highscore-entry {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 5px 0; /* Abstand zwischen den Einträgen */
 }
 
 .highscore-username {
     text-align: left;
+    max-width: 100px; /* Maximalbreite für den Benutzernamen */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.highscore-dots {
-    text-align: center;
-    flex-grow: 1;
+.highscore-score {
+    text-align: center; /* Zentriert */
 }
 
 .highscore-time {
