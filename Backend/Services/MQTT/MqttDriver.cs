@@ -148,6 +148,8 @@ public class MqttDriver : Driver, IHostedService
                 break;
             
             case "adswe_mqtt_cookie_score":
+                Log.Logger.Information("MESSAGE Received for score");
+                
                 ArraySegment<byte> scoreData = eventArgs.ApplicationMessage.PayloadSegment;
                 string scoreMessage = Encoding.UTF8.GetString(scoreData);
 
@@ -158,21 +160,25 @@ public class MqttDriver : Driver, IHostedService
                     string msg = scoreMessage; //"10|01:20,00|carlos";
                     
                     string[] fields = msg.Split('|');
-                    string username = fields[3];
+                    string username = fields[2];
+                    Log.Logger.Information($"username from split: {username}");
 
                     int userId;
-                    
+
                     User? user = await globalService.UserService.GetByName(username);
                     if (user == null)
                     {
                         User newUser = new User() { Username = username };
+                        Log.Logger.Information($"try creating user...");
                         ItemResponseModel<User> createdUser = await globalService.UserService.Create(newUser);
+                        Log.Logger.Information($"fail: " + createdUser.HasError);
                         userId = createdUser.Data.ID;
                     }
                     else
                     {
                         userId = user.ID;
                     }
+                    Log.Logger.Information($"userid: {userId}");
 
                     Score mappedScore = new Score()
                     {
@@ -181,7 +187,9 @@ public class MqttDriver : Driver, IHostedService
                         FK_User = userId
                     };
                     
+                    Log.Logger.Information($"try creating score...");
                     await globalService.ScoreService.Create(mappedScore);
+                    Log.Logger.Information($"success..");
                 }
                 
                 break;
@@ -204,6 +212,7 @@ public class MqttDriver : Driver, IHostedService
                     var globalService = scope.ServiceProvider.GetRequiredService<IGlobalService>();
                     
                     Log.Logger.Information("global: " + globalService.ToString());
+                    Log.Logger.Information("global.user: " + globalService.UserService.ToString());
 
                     ItemResponseModel<User> us = await globalService.UserService.Create(newUser2);
                     Log.Logger.Information("DONE creating:");
@@ -212,7 +221,6 @@ public class MqttDriver : Driver, IHostedService
                 }
                 
                 break;
-
         }
     }
 }

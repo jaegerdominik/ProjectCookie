@@ -5,25 +5,28 @@ using ProjectCookie.Services.BaseInterfaces;
 using ProjectCookie.Services.Response;
 using ProjectCookie.Utils;
 using ProjectCookie.Utils.Logging;
+using Serilog;
 
 namespace ProjectCookie.Services;
 
 public abstract class Service<TEntity> : IService<TEntity> where TEntity : Entity
 {
     protected IPostgresRepository<TEntity> Repo;
-
     protected IModelStateWrapper ValidationDictionary;
     protected ModelStateDictionary ModelStateDictionary;
     
     public Service(IPostgresRepository<TEntity> repo)
     {
         Repo = repo;
+        ModelStateDictionary = new ModelStateDictionary();
+        ValidationDictionary = new ModelStateWrapper(ModelStateDictionary);
     }
 
     public abstract Task<bool> Validate(TEntity entity);
     
     public async Task<ItemResponseModel<TEntity>> Create(TEntity entry)
     {
+        Log.Information("INSIDE CREATE with param: " + entry);
         bool validated = await Validate(entry);
         ItemResponseModel<TEntity> response = new ItemResponseModel<TEntity>();
         

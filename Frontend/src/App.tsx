@@ -14,7 +14,6 @@ function App() {
             })
             .catch(e => console.log(e));
             
-            
             navigate('/game', { state: { username } });
         } else {
             alert('Please enter a username');

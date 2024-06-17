@@ -139,12 +139,10 @@ function GamePage() {
                 if (intervalId.current) clearInterval(intervalId.current);
                 if (timerId.current) cancelAnimationFrame(timerId.current);
 
-                fetch(`https://localhost:7031/api/cookie/publish`, {
+                fetch(`https://localhost:7031/api/cookie/publish/${score}|${formatTime(time)}|${username}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ specialScoreString: `${score}|${formatTime(time)}|${username}` })
                 })
-                .then(response => response.json());
+                .catch(e => console.log(e));
             }
             return newLives;
         });

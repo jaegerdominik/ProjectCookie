@@ -41,8 +41,8 @@ public class CookieController : ControllerBase
         return Ok(users);
     }
     
-    [HttpPut("publish")]
-    public async Task<IActionResult> CreateUser([FromBody] string specialScoreString)
+    [HttpPut("publish/{specialScoreString}")]
+    public async Task<IActionResult> CreateUser(string specialScoreString)
     {
         await _driver.Publish("adswe_mqtt_cookie_score", specialScoreString);
         return Ok();
