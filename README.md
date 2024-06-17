@@ -34,6 +34,7 @@
 
 1. Start the docker container:
     ```bash
+    cd ./.docker
     docker-compose up
     ```
 
