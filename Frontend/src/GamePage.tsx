@@ -37,6 +37,7 @@ function GamePage() {
     const [score, setScore] = useState<number>(0);
     const [time, setTime] = useState<number>(0);
     const [isGameOver, setIsGameOver] = useState<boolean>(false);
+    const [areScoresSent, setAreScoresSent] = useState<boolean>(false);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [highscores, setHighscores] = useState<Highscore[]>([]);
     const [currentScores, setCurrentScores] = useState<IScore[]>([]);
@@ -121,6 +122,17 @@ function GamePage() {
             });
     }, []);
 
+    useEffect(() => {
+        if (isGameOver && !areScoresSent) {
+            fetch(`https://localhost:7031/api/cookie/publish/${score}|${formatTime(time)}|${username}`, {
+                method: 'PUT',
+            }).catch(e => console.log(e));
+
+            setAreScoresSent(true);
+        }
+    }, [isGameOver, areScoresSent, score, time, username]);
+
+
     if (error) return <div>{error}</div>;
     if (!currentScores.length) return <div>Loading scores...</div>;
     if (!currentUsers.length) return <div>Loading users...</div>;
@@ -138,11 +150,6 @@ function GamePage() {
                 setIsGameOver(true);
                 if (intervalId.current) clearInterval(intervalId.current);
                 if (timerId.current) cancelAnimationFrame(timerId.current);
-
-                fetch(`https://localhost:7031/api/cookie/publish/${score}|${formatTime(time)}|${username}`, {
-                    method: 'PUT',
-                })
-                .catch(e => console.log(e));
             }
             return newLives;
         });
@@ -162,6 +169,7 @@ function GamePage() {
         setScore(0);
         setTime(0);
         setIsGameOver(false);
+        setAreScoresSent(false);
         setIsGameStarted(true);
         spawnInterval.current = 2000;
 
